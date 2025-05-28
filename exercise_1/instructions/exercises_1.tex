@@ -1,0 +1,189 @@
+\documentclass[]{erlangen-problemset}
+%\documentclass[a4paper]{scrartcl}
+\usepackage{amsmath} %the recommended functionalities are align and gather for several equations (split allows arranging by hand; gather centers the equations), split for one equation over several lines (for both use '&' for the alignment); and multline for long expressions, which puts the first line left-aligned and the last line right-aligned! 
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{csquotes}
+\usepackage{tensor} %e.g. \tensor[^a_b^c_d]{M}{^a_b^c_d}
+%\usepackage{breqn} %better use a function from the amsmath package
+\usepackage{easytable} %more options to produce tables!
+%\usepackage[backend=biber,style=chem-angew,sorting=none, maxbibnames = 99]{biblatex}
+\usepackage{bm} %fat text in formulas
+\usepackage{afterpage}
+\usepackage[toc,page]{appendix}
+%\usepackage[usenames, dvipsnames]{color}
+\usepackage{enumitem}
+\usepackage{braket}
+\usepackage{subfiles}
+\usepackage{siunitx}
+
+\newcommand{\del}{\partial}
+\newcommand{\eqbox}[1]{\mbox{\boxed{#1}}}
+\newcommand{\textitbf}[1]{\textbf{\textit{#1}}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf}
+\newcommand{\op}[1]{\hat{\textbf{#1}}}
+\renewcommand{\d}{\mathrm{d}}
+\newcommand{\kb}{k_\text{B}}
+\newcommand{\ev}[1]{\langle{#1}\rangle}
+
+
+%Penalties
+\widowpenalty10000
+\clubpenalty10000
+
+\setcounter{problemset}{1}
+
+\title{{\Large Advanced Python for Research Projects} \\[0.3cm] 
+Exercise sheet 1}
+
+\begin{document}
+%\maketitle 
+
+
+\begin{problem}[title={Creating a standalone python script}]
+\noindent
+To set up for future tasks, we want to create a simple python script that can be run from the command line. 
+\Question Create a file called "basic\_setup.py" and add a shebang to make the file executable from the command line without specifying the python interpreter.
+\Question Use the \texttt{argparse} package (see \url{https://docs.python.org/3/library/argparse.html} for documentation, you need to import it first) to allow for two options of the script to be set:
+\begin{enumerate}
+	\item First, add an option to set the log level via the \texttt{-\.-log} option. 
+	The log level should be a string and either \texttt{warn}, \texttt{info}, \texttt{info}, \texttt{debug}, or \texttt{error}. 
+	Store the resulting option in a variable \texttt{loglevel}. 
+	The default setting should be \texttt{warn}.
+	\item Add an option \texttt{-i, -\.-input\_folder}, that allows the user to specify an input folder for future processing. 
+	The default option should be the current directory. 
+	Store the value in a \texttt{input\_folder} variable.
+	\item Add a help text to the argparse setup and the individual arguments. 
+	The help text for the script should state that it is a script to display the files and folders in a directory in alphabetic order. 
+	The help text should specify which values can be set on each argument and which default values will be applied if none are set.
+\end{enumerate}
+\Question Test that your script is working as intended by running \texttt{./basic\_setup.py -h} or {\texttt{./basic\_setup.py -\.-help}}, which should display the help text associated with your script. 
+This should contain all of the description text you configured with the argparse package.
+If the help text does not contain all of the arguments, go back and fix your code to make sure, all of your help text is displayed correctly.
+\Question To finish up this initial setup, add a default output using the \texttt{print} method to state which log level has been set and which directory will be analyzed.
+\end{problem}
+
+\begin{problem}[title={Setting up a logger}]
+\noindent
+Now, we want to set up a logger using the \texttt{logging} package as presented in the lecture (see \url{https://docs.python.org/3/library/logging.html} for documentation). 
+We want to create the logger for our main script using the \texttt{\_\_name\_\_} variable as the logger name.
+\Question Expand the script created in the prior exercise problem and create a Logger object in a \texttt{logger} variable for which you set the loglevel according to the \texttt{loglevel} variable configurable via the command line options. 
+Also, depending on your configuration of the argparse package: 
+If the log level is none of the permitted options (may not be possible depending on your setup of the arguments), output a warning via the logger, that the log level was not appropriately set and that the default option will be set instead.
+\Question Extend the logger with two handlers: 
+\begin{enumerate}
+	\item One writing to the command line (\texttt{StreamHandler})
+	\item One writing all output to a log file in the current directory (\texttt{FileHandler}).
+\end{enumerate}
+\Question Modify the existing code so that the information about the set log level and the chosen directory are only displayed if the log level is \texttt{info} or \texttt{debug}. 
+Use the \texttt{logger.info} function for this. 
+\Question We want to catch some usual issues first and also add appropriate logging outputs for those occasions. 
+Use the \texttt{os.path.isdir()} and \texttt{os.path.exists()} functions to check whether the provided input folder path exists and is also a directory. 
+If not, log an error message stating that the provided path is not a directory.
+\Question We now want to store the log file in the chosen directory instead of the current folder. 
+Modify your code to add the \texttt{FileHandler} only after the check whether the directory exists has been successful. 
+The target log file should be called \texttt{.basic.log} (with a leading dot, to mark the file as hidden) and be within the input directory.
+\end{problem}
+
+\begin{problem}[title={Type checking}]
+\noindent
+We want to write our directory list in an extensible and reusable manner. 
+For this purpose, we want to create a function \texttt{create\_directory\_listing}, with appropriate type hints.
+\Question The method should take two options: the directory path and the logger.
+\Question Use the \texttt{typing} package to add type hints to the function. 
+\begin{itemize}
+	\item The directory path should be provided as a \texttt{pathlib.Path} object. 
+	Make sure you import the necessary types and packages for this type hint to work.
+	\item Find the appropriate type for the Logger from the logging package documentation and add the appropriate type hint to the logger parameter.
+	\item The return type of the function should either be a pair of lists (\texttt{List}) of string objects (\texttt{str}) or a None object (if there is an error). 
+	Use the \texttt{Union} type from the typing package to implement this.
+\end{itemize}
+\Question The check, whether the directory exists, should now be moved into the \texttt{create\_directory\_listing} function.
+Use the methods of the \texttt{pathlib.Path} object to check for existence and being a directory instead of the \texttt{os.path} module's functions.
+
+Additionally, the setup of the \texttt{FileHandler} within the target directory should be moved into this newly created function.
+As the log level is not passed as a parameter to the function, you can get the currently set log level from the provided Logger and apply it to the \texttt{FileHandler} as well. 
+Whenever an error or warning occurs, the issue should be logged with the logger provided to the function. 
+If the error is unrecoverable like the directory not existing, return \texttt{None} from this function in accordance with the type hints. 
+If the issue is recoverable, log a warning and continue with the function execution.
+Before returning from this function, remove the \texttt{FileHandler} from the logger again.
+\Question Using the \texttt{pathlib.Path} class's functionality, iterate over the entries of the directory. 
+Use the \texttt{pathlib} module's functionality to check whether each entry is a directory or a file. 
+Ignore everything that is neither a file or a directory, but add an \texttt{info} output for the logger that such an element has been encountered, including the respective name. 
+\Question Also ignore all hidden entries of the directory, which are entries whose names start with a ".". 
+However, you should log info messages for those entries, stating that hidden elements have been omitted.
+\Question Now, create two lists, one containing the names of all entries in the directory which are files, and one, which contains the entries which are directories (use the \texttt{.name} property of the \texttt{Path} object to get only the last part of the path).
+Sort each of these lists alphabetically. 
+Return the results as a pair \texttt{(files, directories)}.
+\Question We now have a special case, when the directory exists but there are no entries in our return values, e.g. because all entries are hidden. 
+Add a check whether both of our lists are empty before returning them and if that is the case, add a warning to the log that there are no visible entries in the chosen directory.
+\Question Now, the function is somewhat ambiguous: 
+The user would not know, which of the lists in the return value is the list of files and which the list of directories. 
+Add a docstring comment to document the right order to your function. 
+Such a documentation document is a comment immediately following the ":" after the function name, arguments and return type declaration. 
+It starts with \texttt{"""} (all three double quotes) and is terminated by the same three double quotes. 
+In between, add a message explaining the functionality of the whole function including the possible error of the directory not existing, the logger being extended by the function, the order of entries in the return value and the return value in case of an error.
+\Question To tie up the module, use the function \texttt{create\_directory\_listing} in your module's main code to get the list of files and directories in the chosen path from the script's arguments. 
+If None is returned, you can output an error message using \texttt{print} in addition to the log message explaining the error and terminate the program using \texttt{sys.exit(1)}, where the value 1 denotes an error. 
+If the list of files and directories could be generated, write to the output a list of all file names first, where you start with a line stating "FILES:" followed by one line for each individual file name. 
+Then follow it up with a line "FOLDERS:" followed by one line per directory/folder contained within the chosen directory. 
+To signify success, either just let the program reach the end of your script or run \texttt{sys.exit(0)} (where 0 is the success flag for a program's execution) at the end of your code
+\Question We want to test the correctness of our code. 
+Run \texttt{basic\_setup.py --log info}" and compare the results to running \texttt{ls -ah}. 
+Which differences do you notice? 
+Would you expect there to be differences?
+\end{problem}
+
+\begin{problem}[title={Iterators}]
+\noindent
+We now want to create our own \textbf{iterator} to streamline the use of our \texttt{create\_directory\_listing} function.
+For this purpose, we want to create a class implementing the iterator interface (i.e., the \texttt{\_\_iter\_\_} and \texttt{\_\_next\_\_} methods), that calls the \texttt{create\_directory\_listing} function in its constructor and then provides the directories and files as iterator items.
+\Question Create a class \texttt{DirectoryIterator} with a constructor, \texttt{\_\_iter\_\_} and \texttt{\_\_next\_\_} methods. 
+The constructor is supposed to accept three arguments: 
+\begin{itemize}
+	\item the path to the directory to be analyzed, 
+	\item a bool value \texttt{is\_files}, which if set to True makes the iterator only return the filenames and if set to False makes the iterator only return directory names, 
+	\item and lastly the logger to be used for logging purposes.
+\end{itemize}
+In the constructor, set instance variables containing the path to the directory, the \texttt{is\_files} value and a variable containing the \texttt{logger} provided to the constructor. 
+Make sure these are not accidentally stored neither in global variables nor in class variables instead.\\
+Additionally, create an instance variable \texttt{entry\_list}, in which you store either the list of files or the list of directories you obtain by calling the \texttt{create\_directory\_listing} function with the appropriate parameters. 
+Choose, which to pick for your \texttt{entry\_list} based on the \texttt{is\_files} value.\\
+Think about how to best deal with errors or issues that may occur during this constructor and use logging appropriately. 
+Setting the \texttt{entry\_list} value to an otherwise impossible value may be a good way to signal an error during construction.
+\Question Implement a \texttt{\_\_repr\_\_} functionality for your class to help with debugging. 
+As said in the lecture, it should tell you about all the values necessary for recreating this instance of the \texttt{DirectoryIterator}, i.e. all parameters of the constructor. 
+For the logger, you can call \texttt{repr(logger)} to obtain a representation of the logger.\\
+When done, verify the result of your debug output, by outputting a test instance of the \texttt{DirectoryIterator} class.
+Again, use the variables of the \texttt{self} instance, no global or class variables.
+\Question Implement the \texttt{\_\_iter\_\_} method. (Hint: since our object implements the  \texttt{\_\_next\_\_} method, just return the instance itself)
+\Question Implement the \texttt{\_\_next\_\_} method. 
+To remember the index of the last entry you have returned, add a \texttt{entry\_index} variable to your object/instance in the constructor, initialize it appropriately in the constructor to an invalid position, reset it in the \texttt{\_\_iter\_\_} method and update it upon every call to the \texttt{\_\_next\_\_} method. 
+Check that you do not accidentally exceed the number of entries in your object's \texttt{entry\_list} and raise a \texttt{StopIteration} exception when the last entry has been returned. 
+(Note: You may choose to implement the \texttt{len()} functionality on your object to help with figuring out whether you are at the end and also allowing users to figure out, how many files or folders there are in your iteration)
+\Question We now verify that our \texttt{DirectoryIterator} class works as intended. 
+Modify the main file code written in the previous exercise, where you used the return values of \texttt{create\_directory\_listing} to write the "FILES:" and "FOLDERS:" lists to instead use a for loop over a \texttt{DirectoryIterator} instance for each individual list. 
+Verify, that the output of your program has not changed when switching to the \texttt{DirectoryIterator} instead of using  \texttt{create\_directory\_listing} directly.
+\Question Finally, add sufficient documentation to your \texttt{DirectoryIterator} class and its methods. 
+In the class definition, outline which purpose the class has. You should point out the meaning of the \texttt{is\_files} option and that the class can be used as an iterator. \\
+In the documentation to the constructor, explain the meaning of each indvidiual parameter and point out potential changes made to parameters.
+(Hint: think about the added FileHandler being added temporarily. If we did not remove it, this would be the place to point it out).\\
+In the documentation for the \texttt{\_\_iter\_\_} method, mention that the iteration is reset to the first position when this function is called. 
+Why would you mention that? 
+Because it may impact your code if you maintain multiple variables containing the same object as an iterator that you would want to use independently. 
+Also note that you cannot iterate over the same object at two points independently. 
+Only after the first iteration is finished can you create a new iterator from the \texttt{DirectoryIterator} instance.\\
+In the documentation to the \texttt{\_\_next\_\_} method, you do not necessarily have to mention that the \texttt{StopIteration} exception is thrown upon reaching the end of the entry list as it is part of the default contract for the \texttt{\_\_next\_\_} function. 
+However, it would be reasonable to mention that it follows convention in this regard and that its outputs depend on the choice of the \texttt{is\_files} option.
+\end{problem}
+
+\end{document}
