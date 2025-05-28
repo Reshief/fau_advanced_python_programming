@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def create_directory_listing(directory_path: pathlib.Path, local_logger: logging.Logger) -> Union[Tuple[List[str], List[str]],None]:
+def create_directory_listing(directory_path: pathlib.Path, local_logger: logging.Logger) -> Union[Tuple[List[str], List[str]], None]:
     """
     Function to list the visible files and directories within the provided folder.
 
@@ -26,7 +26,7 @@ def create_directory_listing(directory_path: pathlib.Path, local_logger: logging
         The path object pointing to a directory to be analyzed
     local_logger : logging.Logger
         The logger to use for outputting log messages within this function
-    
+
     Returns
     ----------
     Tuple[List[str], List[str]] or None
@@ -37,22 +37,25 @@ def create_directory_listing(directory_path: pathlib.Path, local_logger: logging
     No visible entries in the chosen directory:
         Will be logged to the logger in case no entries were found in the target directory
 
-    
+
     """
 
-    # pay close attention that you only work on the local variables defined via the parameters of this function. 
+    # pay close attention that you only work on the local variables defined via the parameters of this function.
     # Naming conflicts and accidental references to global variables are very common when shifting code into a function
 
     # catch possible issues with the input folder
     if not directory_path.exists():
-        local_logger.error("The input path '{}' does not exist".format(directory_path))
+        local_logger.error(
+            "The input path '{}' does not exist".format(directory_path))
         return None
     if not directory_path.is_dir():
-        local_logger.error("The input path '{}' is not a directory".format(directory_path))
+        local_logger.error(
+            "The input path '{}' is not a directory".format(directory_path))
         return None
-    
-    # create log file in the 
-    logfile_handler = logging.FileHandler(directory_path / ".basic.log", encoding="utf-8")
+
+    # create log file in the
+    logfile_handler = logging.FileHandler(
+        directory_path / ".basic.log", encoding="utf-8")
     # Instead of using the argument from the command line, we use the logging level already set for the logger provided to us
     logfile_handler.setLevel(local_logger.getEffectiveLevel())
     local_logger.addHandler(logfile_handler)
@@ -64,13 +67,15 @@ def create_directory_listing(directory_path: pathlib.Path, local_logger: logging
     for entry in directory_path.iterdir():
         # Ensure entry is a file or a directory
         if not entry.is_file() and not entry.is_dir():
-            local_logger.info("Encountered non-file and non-directory '{}'".format(entry.name))
+            local_logger.info(
+                "Encountered non-file and non-directory '{}'".format(entry.name))
             continue
         # Check whether entry is hidden
         if entry.name.startswith("."):
-            local_logger.info("Encountered hidden entry '{}'".format(entry.name))
+            local_logger.info(
+                "Encountered hidden entry '{}'".format(entry.name))
             continue
-        
+
         # Add entries to respective lists
         if entry.is_file():
             files_list.append(entry.name)
@@ -90,11 +95,13 @@ def create_directory_listing(directory_path: pathlib.Path, local_logger: logging
 
     return (files_list, directories_list)
 
+
 class DirectoryIterator:
     """
     TODO
     """
-    def __init__(self, path: pathlib.Path, logger: logging.Logger, is_files: bool) -> None:
+
+    def __init__(self, path: pathlib.Path, is_files: bool, logger: logging.Logger) -> None:
         """
         TODO
         """
@@ -111,9 +118,10 @@ class DirectoryIterator:
         temp_directory_result = create_directory_listing(path, self.logger)
 
         if temp_directory_result is None:
-            self.logger.error("Could not initially parse the target directory '{}'. The iterator will no contain any data.".format(path))
+            self.logger.error(
+                "Could not initially parse the target directory '{}'. The iterator will no contain any data.".format(path))
 
-            return 
+            return
         else:
             files, folders = temp_directory_result
 
@@ -121,14 +129,14 @@ class DirectoryIterator:
                 self.entry_list = files
             else:
                 self.entry_list = folders
-        
+
         pass
-    
-    def __iter__(self) :
+
+    def __iter__(self):
         # Reset index and return self as iterator
         self.entry_index = 0
         return self
-    
+
     def __next__(self):
         # Check we have entries and are not at the end first
         if self.entry_list is not None and self.entry_index < len(self):
@@ -137,7 +145,6 @@ class DirectoryIterator:
             return self.entry_list[return_index]
         else:
             raise StopIteration()
-        
 
     def __len__(self):
         # Just a helpful function to check the number of entries
@@ -145,16 +152,16 @@ class DirectoryIterator:
             return 0
         else:
             return len(self.entry_list)
-    
+
     def __repr__(self) -> str:
         # Return a string representation of this object that can be recreated
         return "{}(path={},logger={},is_files={})".format(type(self).__name__, self.path, repr(self.logger), str(self.is_files))
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(sys.argv[0], description="Script to display the files in a directory in alphabetic order \n\n"\
-    "" \
-    "The `input_folder` option needs to point to a valid directory. An error will be logged if the folder does not exist")
+    parser = argparse.ArgumentParser(sys.argv[0], description="Script to display the files in a directory in alphabetic order \n\n"
+                                     ""
+                                     "The `input_folder` option needs to point to a valid directory. An error will be logged if the folder does not exist")
 
     parser.add_argument(
         "-log",
@@ -178,8 +185,8 @@ if __name__ == "__main__":
         "debug": logging.DEBUG,
         "info": logging.INFO,
         "warn": logging.WARN,
-        "error": logging.ERROR,}
-    
+        "error": logging.ERROR, }
+
     logger.setLevel(logmap[loglevel])
 
     stream_handler = logging.StreamHandler()
@@ -190,13 +197,13 @@ if __name__ == "__main__":
     logger.info("The loglevel is '{}'".format(loglevel))
     logger.info("The directory '{}' will be analyzed".format(input_folder))
 
-
-    dir_iterator = DirectoryIterator(pathlib.Path(input_folder), logger, False)
+    dir_iterator = DirectoryIterator(pathlib.Path(input_folder), False, logger)
 
     print("Debug output to check that repr() works for our DirectoryIterator():")
     print(dir_iterator)
 
-    files_iterator = DirectoryIterator(pathlib.Path(input_folder), logger, True)    
+    files_iterator = DirectoryIterator(
+        pathlib.Path(input_folder), True, logger)
 
     # We decided to use a None value in the entry list to indicate an error
     if dir_iterator.entry_list is None:
