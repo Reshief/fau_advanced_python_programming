@@ -1,0 +1,91 @@
+\documentclass[]{erlangen-problemset}
+%\documentclass[a4paper]{scrartcl}
+\usepackage{amsmath} %the recommended functionalities are align and gather for several equations (split allows arranging by hand; gather centers the equations), split for one equation over several lines (for both use '&' for the alignment); and multline for long expressions, which puts the first line left-aligned and the last line right-aligned! 
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{csquotes}
+\usepackage{tensor} %e.g. \tensor[^a_b^c_d]{M}{^a_b^c_d}
+%\usepackage{breqn} %better use a function from the amsmath package
+\usepackage{easytable} %more options to produce tables!
+%\usepackage[backend=biber,style=chem-angew,sorting=none, maxbibnames = 99]{biblatex}
+\usepackage{bm} %fat text in formulas
+\usepackage{afterpage}
+\usepackage[toc,page]{appendix}
+%\usepackage[usenames, dvipsnames]{color}
+\usepackage{enumitem}
+\usepackage{braket}
+\usepackage{subfiles}
+\usepackage{siunitx}
+
+\newcommand{\del}{\partial}
+\newcommand{\eqbox}[1]{\mbox{\boxed{#1}}}
+\newcommand{\textitbf}[1]{\textbf{\textit{#1}}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf}
+\newcommand{\op}[1]{\hat{\textbf{#1}}}
+\renewcommand{\d}{\mathrm{d}}
+\newcommand{\kb}{k_\text{B}}
+\newcommand{\ev}[1]{\langle{#1}\rangle}
+
+
+%Penalties
+\widowpenalty10000
+\clubpenalty10000
+
+\setcounter{problemset}{3}
+
+\title{{\Large Advanced Python for Research Projects} \\[0.3cm] 
+Exercise sheet 3: Modules, Documentation and testing}
+
+\begin{document}
+%\maketitle 
+
+
+\begin{problem}[title={Using files and directories as modules}]
+\noindent
+\Question Pack previously defined functions in a file called advanced_functions.
+\Question Add documentation to the file like for a module 
+\Question Add a function to output the module name using \_\_name\_\_
+\Question Create a directory advanced\_module and a file called \_\_init\_\_.py in there
+\Question Print out the module name \_\_name\_\_ in the \_\_init\_\_.py script and create two more files arithmetics.py and func.py. 
+Add functions to get the square root of the absolute value of a number as well as the function abs\_sub, that takes the absolute value of the difference of the abs of its two parameters to arithmetics.py, add documentation. 
+Add functions to load the first two lines and the last two lines from a file in func.py
+\Question Create a main script main.py and import the module advanced_functions and the module advanced_module. 
+What do you notice when you execute the script? 
+\Question Use the function from the advanced\_functions module to output the module name, which module name does it print compared to a print(\_\_name\_\_) statement in main.py?
+\Question Add loggers to your modules using the \_\_name\_\_ variable to determine the module name and add them to your module functions to log infos, warnings and errors
+\Question Use the functions from the other modules to read the first lines from the file mystic.txt and calculate the abs\_sub value of the numbers in the first two lines and calculate the abs square roots for the numbers in the last two lines. Output your values using a logger in your main file. 
+\Question Add some function that can trigger an error state and test that it logs correctly. 
+\Question Add the map and the reduce function to their own helper-module, document it, add tests and generate a documentation file. (look up how to do that)
+\end{problem}
+
+
+\begin{problem}[title={Building tests for our modules}]
+\noindent
+\Question Add tests for your functions to check that they work, also for the modules defined via files or as a directory
+\Question Run the tests and verify correct operation. Fix any errors you notice and Add comments explaining the intention of your tests
+\end{problem}
+
+\begin{problem}[title={Making our module installable with pip}]
+\noindent
+\Question We want to use pip -e . to install our module advanced\_module so that any python script on our user can access it. (Link to example and documentation)
+\Question Install the module to the user
+\Question Remove the module from the user
+\Question Add a Readme.md file explaining the function of your module.
+\end{problem}
+
+\begin{problem}[title={Generating documentation for your module}]
+\noindent
+\Question Use pdoc3 to generate a documentation page for your module
+\end{problem}
+
+
+\end{document}

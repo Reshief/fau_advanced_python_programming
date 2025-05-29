@@ -1,0 +1,82 @@
+\documentclass[]{erlangen-problemset}
+%\documentclass[a4paper]{scrartcl}
+\usepackage{amsmath} %the recommended functionalities are align and gather for several equations (split allows arranging by hand; gather centers the equations), split for one equation over several lines (for both use '&' for the alignment); and multline for long expressions, which puts the first line left-aligned and the last line right-aligned! 
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{csquotes}
+\usepackage{tensor} %e.g. \tensor[^a_b^c_d]{M}{^a_b^c_d}
+%\usepackage{breqn} %better use a function from the amsmath package
+\usepackage{easytable} %more options to produce tables!
+%\usepackage[backend=biber,style=chem-angew,sorting=none, maxbibnames = 99]{biblatex}
+\usepackage{bm} %fat text in formulas
+\usepackage{afterpage}
+\usepackage[toc,page]{appendix}
+%\usepackage[usenames, dvipsnames]{color}
+\usepackage{enumitem}
+\usepackage{braket}
+\usepackage{subfiles}
+\usepackage{siunitx}
+
+\newcommand{\del}{\partial}
+\newcommand{\eqbox}[1]{\mbox{\boxed{#1}}}
+\newcommand{\textitbf}[1]{\textbf{\textit{#1}}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf}
+\newcommand{\op}[1]{\hat{\textbf{#1}}}
+\renewcommand{\d}{\mathrm{d}}
+\newcommand{\kb}{k_\text{B}}
+\newcommand{\ev}[1]{\langle{#1}\rangle}
+
+
+%Penalties
+\widowpenalty10000
+\clubpenalty10000
+
+\setcounter{problemset}{5}
+
+\title{{\Large Advanced Python for Research Projects} \\[0.3cm] 
+Exercise sheet 5: Parallelization}
+
+\begin{document}
+%\maketitle 
+
+
+\begin{problem}[title={Parallelization in python}]
+\noindent
+\Question Write function to create a file with a configurable number of random float32 entries to a parameter filename
+\Question Write function to read entries from a filename and calculate average
+\Question now write a function that writes N files with M entries, then reads their averages back and calculates a final average
+\Question Write a version of the function using a threadpool, where you use all cores of your CPU to parallalize the writing of files, then wait for that operation to finish, measure the time it took and then read them back with average calculation in parallel and measure the time for that as well. 
+Overall compare the times for the writing operation and the times for the read+calculation operation to the non-parallelized version. Which part scales better with the number of cores? And why?
+\Question now use the multiprocessing module to perform the part of the parallelized task that did not scale well with the number of cores.
+\Question How does the multiprocessing module perform in place of the threaded version?
+\end{problem}
+
+
+\begin{problem}[title={Parallel operators}]
+\noindent
+\Question we want to optimize our map and reduce operations previously implemented in exercise 2 by parallelizing them with multiprocessing or multi-threading. Discuss, which option is more fitting for this problem.
+\Question Implement the concurrent version of the map function, where you split up the data set and assign them to a number of processes. Try out different minimum numbers of data per executor, only start as many executors as necessary and don't create new threads/processes if there are too few entries. Make the minimum number configurable and add documentation. 
+\Question Add tests for the concurrent map function and compare the results of your linear version with your parallel version to ensure consistency
+\Question We want to implement a parallel reduce function, where we change the semantics a bit:
+We now want to apply the divide-and-conquer technique, in that our parallel version splits the dataset in subsets that are reduced in parallel with the classical reduce function and then the parallel reduce function requires an additional combine-function, that takes the individual reduce results and combines them into the final result
+\Question We want to create a so-called Map-Reduce functionality, where first the data is mapped in parallel with a given function applied to each data point and then the reduce function is applied to the results of the map operation. Use the parallel map implementation and the linear reduce operation to implement this functionality. Add documentation and tests to ensure its correct performance by calculating the sum of squares, cubes and seventh powers, the digit sum of the sum of their digit sums and similar problems.
+\end{problem}
+
+\begin{problem}[title={Parallel numpy/scipy replacement}]
+\noindent
+\Question Let us employ our parallellized map and reduce functions to parallelize our numpy/scipy imitation functions from the prior exercise
+\Question add tests to make sure, the operation is identical to the result obtained by numpy/scipy.
+\Question Compare their performance to our previous sequential versions as well to the numpy/scipy implementation
+\Question What do we learn from the comparison in performance?
+\end{problem}
+
+\end{document}

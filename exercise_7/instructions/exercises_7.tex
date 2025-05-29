@@ -1,0 +1,87 @@
+\documentclass[]{erlangen-problemset}
+%\documentclass[a4paper]{scrartcl}
+\usepackage{amsmath} %the recommended functionalities are align and gather for several equations (split allows arranging by hand; gather centers the equations), split for one equation over several lines (for both use '&' for the alignment); and multline for long expressions, which puts the first line left-aligned and the last line right-aligned! 
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{color}
+\usepackage{csquotes}
+\usepackage{tensor} %e.g. \tensor[^a_b^c_d]{M}{^a_b^c_d}
+%\usepackage{breqn} %better use a function from the amsmath package
+\usepackage{easytable} %more options to produce tables!
+%\usepackage[backend=biber,style=chem-angew,sorting=none, maxbibnames = 99]{biblatex}
+\usepackage{bm} %fat text in formulas
+\usepackage{afterpage}
+\usepackage[toc,page]{appendix}
+%\usepackage[usenames, dvipsnames]{color}
+\usepackage{enumitem}
+\usepackage{braket}
+\usepackage{subfiles}
+\usepackage{siunitx}
+
+\newcommand{\del}{\partial}
+\newcommand{\eqbox}[1]{\mbox{\boxed{#1}}}
+\newcommand{\textitbf}[1]{\textbf{\textit{#1}}}
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\green}[1]{\textcolor{green}{#1}}
+\DeclareOldFontCommand{\bf}{\normalfont\bfseries}{\mathbf}
+\newcommand{\op}[1]{\hat{\textbf{#1}}}
+\renewcommand{\d}{\mathrm{d}}
+\newcommand{\kb}{k_\text{B}}
+\newcommand{\ev}[1]{\langle{#1}\rangle}
+
+
+%Penalties
+\widowpenalty10000
+\clubpenalty10000
+
+\setcounter{problemset}{2}
+
+\title{{\Large Advanced Python for Research Projects} \\[0.3cm] 
+Exercise sheet 7: Collaboration and automation}
+
+\begin{document}
+%\maketitle 
+
+
+\begin{problem}[title={Working with other members}]
+\noindent
+\Question Set up a standard project on the university gitlab.
+\Question Add another member.
+\Question Come up with a small project (e.g. writing a simple many-body simulation with gravity)
+\Question Plan the project in a way that profits from the multi-cores on modern computers. Plan for documentation and testing to occur. 
+For this, identify key functionality that needs to be tested and identify interaction points with the user that need documentation.
+\Question Agree on a git workflow (preferrably with feature branches)
+\Question Work together to implement the parts necessary for your project on feature branches. Ask for feedback before merging through pull requests
+\Question Use issues to keep track of what has been done and what needs to be done
+\end{problem}
+
+\begin{problem}[title={Automated testing}]
+\noindent
+\Question Write tests for key functionality of your code, e.g. writing the output to file, running simulations for a certain number of bodies, for how the input reading works, etc.
+\Question Run these tests locally to confirm they are working
+\Question Setup git to automatically run these tests (on gitlab)
+\Question Test on the university gitlab, that the tests are run and inspect the results
+\Question Open issues for all aspects that need fixing and fix them with a hotfix branch. 
+\end{problem}
+
+\begin{problem}[title={Creating a release}]
+\noindent
+\Question Make sure that your code contains installation, usage and example information before creating the release
+\Question Now that you are confident in your code performing the way it should, merge features and hotfixes into your main branch and create a release
+\Question Add a useful explanation to your release.
+\end{problem}
+
+\begin{problem}[title={FAIR principles}]
+\noindent
+\Question Create an Account on ZENODO
+\Question Download the release zip from the git provider and import it into ZENODO to create a documented archive
+\Question Add all necessary meta-information for your Project to be well-documented, including contributors, Usage-Information, a link to the git repository, etc. 
+\end{problem}
+
+\end{document}
