@@ -162,7 +162,7 @@ However, we want to go with an eager execution style, i.e. the return value of o
 where \texttt{R} is a return value type variable and we do not specify, which input types the Sequences can have. 
 We here use an interesting notation, where we do not care about how many extra arguments are provided as iterable, indicated by the star-notation. 
 We can pass these additional arguments to a function, via e.g. \texttt{zip(*iterable)}. 
-You can use a list comprehension to preform the necessary operations or use a for loop, whichever you prefer.\\
+You can use a list comprehension to perform the necessary operations or use a for loop, whichever you prefer.\\
 Indeed, the python type system does not allow us to easily specify that \texttt{func} needs to accept exactly as many arguments as there are sequences in \texttt{iterable}.\\
 Validate that your implementation of \texttt{map} is correct by using it for your previous code by moving its definition to the top of your code file using map for the initial calculations.\\
 Add an appropriate documentation comment to the function for other people to understand how it should be used (Use the NumPy/SciPy style as discussed in the lecture and laid out here: \url{https://numpydoc.readthedocs.io/en/latest/format.html}). 
