@@ -61,22 +61,5 @@ Overall compare the times for the writing operation and the times for the read+c
 \end{problem}
 
 
-\begin{problem}[title={Parallel operators}]
-\noindent
-\Question we want to optimize our map and reduce operations previously implemented in exercise 2 by parallelizing them with multiprocessing or multi-threading. Discuss, which option is more fitting for this problem.
-\Question Implement the concurrent version of the map function, where you split up the data set and assign them to a number of processes. Try out different minimum numbers of data per executor, only start as many executors as necessary and don't create new threads/processes if there are too few entries. Make the minimum number configurable and add documentation. 
-\Question Add tests for the concurrent map function and compare the results of your linear version with your parallel version to ensure consistency
-\Question We want to implement a parallel reduce function, where we change the semantics a bit:
-We now want to apply the divide-and-conquer technique, in that our parallel version splits the dataset in subsets that are reduced in parallel with the classical reduce function and then the parallel reduce function requires an additional combine-function, that takes the individual reduce results and combines them into the final result
-\Question We want to create a so-called Map-Reduce functionality, where first the data is mapped in parallel with a given function applied to each data point and then the reduce function is applied to the results of the map operation. Use the parallel map implementation and the linear reduce operation to implement this functionality. Add documentation and tests to ensure its correct performance by calculating the sum of squares, cubes and seventh powers, the digit sum of the sum of their digit sums and similar problems.
-\end{problem}
-
-\begin{problem}[title={Parallel numpy/scipy replacement}]
-\noindent
-\Question Let us employ our parallellized map and reduce functions to parallelize our numpy/scipy imitation functions from the prior exercise
-\Question add tests to make sure, the operation is identical to the result obtained by numpy/scipy.
-\Question Compare their performance to our previous sequential versions as well to the numpy/scipy implementation
-\Question What do we learn from the comparison in performance?
-\end{problem}
 
 \end{document}
