@@ -111,7 +111,7 @@ Once you are done, combine your insights to pick only entries at odd positions i
 \Question Look at the documentation of  \texttt{numpy.loadtxt} to load a file into memory as a 2d-array. Figure out how to ignore the third column in a file in case it contains text data, whereas every other column is a floating point number.
 \Question Use the result of the  \texttt{get\_random\_array} as an input for \texttt{np.histogram}, to generate a histogram of the randomly distributed values your function generates. Use your function to generate a 2d-array with (x,y)-entries and use that in combination with  \texttt{numpy.histogram2d} to calculate a histogram of 2-dimensional data.
 \Question Use matplotlib to visualize your 1d- and 2d-histograms
-\Question Use  \texttt{scipy.optimize.curve_fit} to try and fit a normal distribution (also available in scipy) to your histogram to compare the fit parameters to your actually chosen parameters.
+\Question Use  \texttt{scipy.optimize.curve\_fit} to try and fit a normal distribution (also available in scipy) to your histogram to compare the fit parameters to your actually chosen parameters.
 \end{problem}
 
 \begin{problem}[title={Rebuilding numpy and scipy functionality ourselves}]
@@ -123,7 +123,7 @@ Use  \texttt{numpy.argsort} to sort both  \texttt{x} and  \texttt{y} by their  \
 Then calculate the central derivatives $(y_{i+1}-y_{i-1})/(x_{i+1}-x_{i-1})$ by employing clever slices instead of a loop or other forms of iterations.
 Return the resulting array of numerical central derivatives and add basic documentation.
 The resulting array should have 2 fewer entries than the input.
-\Question With similar inputs as in the previous problem in a function \texttt{get\_trapezoid\_integral} , implement numerical integration of the resulting discrete function graph (after sorting by x), using the trapezoid rule: $(y_{i+1}*y_{i-1})(x_{i+1}-x_{i-1})/2.0$.
+\Question With similar inputs as in the previous problem in a function \texttt{get\_trapezoid\_integral} , implement numerical integration of the resulting discrete function graph (after sorting by x), using the trapezoid rule: $(y_{i+1}+y_{i-1})(x_{i+1}-x_{i-1})/2.0$.
 This can again be achieved via efficient slicing and using the \texttt{numpy.sum} function as a reduce functionality.
 \Question Implement a root finding algorithm via bisection in a function \texttt{get\_biscection\_root}. 
 The function should take an argument  \texttt{x\_min} and an  \texttt{x\_max} setting the boundary for the search for a root of a function \texttt{f} at a maximum of \texttt{max\_steps} iterations, where the default value for the latter should be $20$.
@@ -143,7 +143,6 @@ At the end, after the iterations have finished, return the middel of the final i
 Use the fact that the individual terms of the central derivative as well as the individual pieces of area under the function graph in the integration can be calculated in parallel. 
 Potential combinations into the final result can be implemented using  \texttt{reduce}.
 \Question Add tests to make sure, the operation is identical to the result obtained by numpy/scipy by generating random y-coordinates and equally spaced x-coordinates (see: \texttt{numpy.linspace}) and putting them into your function and the corresponding numpy function.
-
 \Question Write tests to make sure that your custom-built functions perform the way they are expected by adding a few hand-picked cases. 
 E.g. integrate or calculate the derivative for a linear or constant function.
 \Question Put the tests for the numpy-imitations in a different file than the original function implementation.
@@ -158,3 +157,5 @@ We want to use the test functions as a template to write a function to compare t
 \Question Plot how the execution time of the different functions (derivative, integration) behaves as a function of the input size using matplotlib and sufficiently many datapoints.
 \Question Why does one solution perform so much better?
 \end{problem}
+
+\end{document}
