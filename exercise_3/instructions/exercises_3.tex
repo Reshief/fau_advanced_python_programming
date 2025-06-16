@@ -48,54 +48,113 @@ Exercise sheet 3: Parallelization and Scientific computation}
 %\maketitle 
 
 \begin{problem}[title={Parallel operators}]
+In this exercise, we want to work towards optimizing code through parallelization. As a first application, we will take our map/reduce functions from the previous exercise and calculate them in parallel. 
+Especially the map function lends itself to parallelzation, because it works on distinct input data.
+Parallelization through data separation is possible. Because parallelization is prone to breaking stuff, we will also implement tests for our code to make sure it at least works to some degree.
+If you want to use the non-parallel version for reference in your tests, rename the functions you implement here to \texttt{reduce\_parallel} and \texttt{map\_parallel} to avoid name clashes.
 \noindent
-\Question we want to optimize our map and reduce operations previously implemented in exercise 2 by parallelizing them with multiprocessing or multi-threading. Discuss, which option is more fitting for this problem.
-\Question Implement the concurrent version of the map function, where you split up the data set and assign them to a number of processes. 
-Try out different minimum numbers of data per executor, only start as many executors as necessary and don't create new threads/processes if there are too few entries. 
-Make the minimum number configurable and add documentation. 
-\Question Add tests for the concurrent map function and compare the results of your linear version with your parallel version to ensure consistency
-\Question We want to implement a parallel reduce function, where we change the semantics a bit:
-We now want to apply the divide-and-conquer technique, in that our parallel version splits the dataset into subsets that are reduced in parallel with the classical reduce function and then the parallel reduce function requires an additional combine-function, that takes the individual reduce results and combines them into the final result
-\Question We want to create a so-called Map-Reduce functionality, where first the data is mapped in parallel with a given function applied to each data point and then the reduce function is applied to the results of the map operation. Use the parallel map implementation and the linear reduce operation to implement this functionality. 
-Add documentation and tests to ensure its correct performance by calculating the sum of squares, cubes and seventh powers, the digit sum of the sum of their digit sums and similar problems.
+\Question Before we start coding: we want to optimize our map and reduce operations previously implemented in exercise 2 by parallelizing them with multiprocessing or multi-threading. 
+Discuss, which option is more fitting for this problem, what the up or down sides are and what future changes to the GIL may change about the answer.
+\Question Implement the concurrent version of the \texttt{map} function, where you split up the data set and assign them to a number of processes. 
+For this purpose, add an optional parameter \texttt{min\_executor\_data\_count} with which you can configure the minimum number of data points to be processed by a single thread or process. 
+Then use the provided iterators to collect all of the input data eagerly. To deal with multiple iterators being passed, you can use the \texttt{zip} function to get an iterator returning tuples of entries instead of dealing with the iterators independently.
+For each of the executors (threads or processes), provide them with a slice of your collected data array that contains at least \texttt{min\_executor\_data\_count} entries.
+Also make sure, that you do not create more workers than there are threads available on the CPU. 
+You should distribute the data as equally as possible among the workers.
+Because you provide multiple arguments to the executor, you cannot just pass the function \texttt{f} that is supposed to be called on the data directly to the executor.
+Instead, create a local function that gets passed the function \texttt{f} and the list of data for the function \texttt{f} and then iteratrively calls f on each of the entries.
+(Use the \texttt{*} prefix to unwrap arguments for a function from a tuple).
+Eventually add documentation to your \texttt{map} function to allow for other people using it.
+Explain all parameters, its parallel implementation and the requirements that this imposes on the function\texttt{f}.
+Also declare if you are using processes that the function cannot access shared data.
+\Question Add a Test class for the parallel \texttt{map} function using the pytest framework in which you implement a few unit tests to check the functionality of your \texttt{map} function. 
+Some scenarios you should check:
+\begin{enumerate}
+    \item Make sure that your \texttt{map} function works correctly with one input iterator/list and a function taking one input (e.g. a function calculating the square of its argument). You can check the results by iteratively calculating the intended result in a for loop and then comparing with the result of the \texttt{map} invocation.
+    \item Make sure it works with a function taking multiple arguments and multiple iterators (e.g. a function calculating the sum of two lists).
+    \item Make sure it does not break if you provide an empty list.
+    \item Make sure the \texttt{map} invocation fails if the number of iterators does not satisfy the number of arguments required by the function. (It should fail automatically, but add a test that ensures that it does fail in this scenario)
+\end{enumerate}
+\Question We want to implement a parallel \texttt{reduce} function, where we change the semantics a bit:
+We now want to apply the divide-and-conquer technique, in that our parallel version splits the dataset into subsets that are reduced in parallel with the classical reduce function.
+Afterwards we will have to combine the individual reduce results back into one overall result.
+For this, add an additional argument \texttt{combine\_function}, which will take the result of a \texttt{reduce} call and returns the combined result.
+Also add an optional parameter \texttt{min\_executor\_data\_count} with similar semantics as in the \texttt{map} function written before.
+First exhaust the input iterator to retrieve all data that needs to be distributed across workers.
+Then slice the data as above and run the classical reduce function on the slices.
+You may even use the \texttt{map}-function to run the classical reduce-function on the slices of data or you can use a different approach. (Note: the input for the map function then needs to be an array holding the slices of data that the reduce function should be called upon as well as the initial argument to your reduce function.)
+After the parallel reduce calls have finished, use the \texttt{combine\_function} to combine the results into one final result. 
+For this, you can use a classical \texttt{reduce} call with the \texttt{combine\_function} and the results of the parallel execution.
+Add appropriate documentation to your parallel \texttt{reduce} function.
+\Question Add a Test class for the parallel \texttt{reduce} function using the pytest framework in which you implement a few unit tests to check the functionality of your \texttt{reduce} function. 
+Some scenarios you should check:
+\begin{enumerate}
+    \item Make sure that your \texttt{reduce} function works correctly with an empty input list and an initial argument (it should return the initial argument).
+    \item Make sure it runs correctly if there is only one executor, i.e. not enough data entries for more than one worker. (this should yield the same result as the non-parallel reduce function)
+    \item Make sure that the combine function is applied correctly by running with more data than is required for 2 workers.
+    \item Make sure that the return value of your reduce function is reasonable or that it throws a (documented) exception in case it is called with an empty iterator and no initial state.
+\end{enumerate}
+\Question We want to create a so-called Map-Reduce functionality, where first the data is mapped in parallel with a given function applied to each data point and then the reduce function is applied to the results of the map operation. 
+Create this new function called \texttt{map\_reduce}, taking a mapping function \texttt{func\_map}, a reduce function \texttt{reduce\_func} with a potential initial value \texttt{reduce\_initial}, (a combine function \texttt{combine\_func} if you want to use a parallel \texttt{reduce} function internally), and an arbitrary number of iterators as an argument \texttt{*iterators}.
+Use the parallel \texttt{map} implementation to first apply \texttt{func\_map} to the input iterators and then apply the reduction with \texttt{reduce\_func} to the results (with \texttt{combine\_func}) using the initial value parameter.
+Add documentation and tests to ensure its correct performance by calculating the sum of squares, cubes and seventh powers of an input list. 
+Consider, which other kinds of scenarios you should be testing here.
 \end{problem}
 
 \begin{problem}[title={Using numpy and scipy for scientific calculation}]
+In this exercise, we want to get familiar with some helpful scientific packages.
+Create a new file to implement the following functionality:
 \noindent
-\Question Generating random numbers
-\Question Operations with indices
-\Question Writing and reading files with numpy
-\Question Calculating statistics
-\Question Visualizing statistics
-\Question Other Scipy modules
+\Question Write a function \texttt{get\_random\_array} that takes the number of desired entries \texttt{n} and generates an array of  \texttt{n} normal-distributed floating point numbers. When you are done, make the mean and variance of the normal distribution configurable via optional parameters of the function. If you want, extend the parameter  \texttt{n} to allow for a shape tuple to be passed. The function should then generate an array of that shape with the desired distribution.
+\Question Practise how to choose every number at an odd index, every number at an even index, every number in the first half of an array, and every number in the second half of an array using slices.
+Once you are done, combine your insights to pick only entries at odd positions in every line in the last third of a 2d-array and set them to zero.
+\Question Look at the documentation of  \texttt{numpy.loadtxt} to load a file into memory as a 2d-array. Figure out how to ignore the third column in a file in case it contains text data, whereas every other column is a floating point number.
+\Question Use the result of the  \texttt{get\_random\_array} as an input for \texttt{np.histogram}, to generate a histogram of the randomly distributed values your function generates. Use your function to generate a 2d-array with (x,y)-entries and use that in combination with  \texttt{numpy.histogram2d} to calculate a histogram of 2-dimensional data.
+\Question Use matplotlib to visualize your 1d- and 2d-histograms
+\Question Use  \texttt{scipy.optimize.curve_fit} to try and fit a normal distribution (also available in scipy) to your histogram to compare the fit parameters to your actually chosen parameters.
 \end{problem}
 
 \begin{problem}[title={Rebuilding numpy and scipy functionality ourselves}]
+As a programmming exercise, we want to implement a few simple numerical functions on our own:
 \noindent
-\Question Differentiation
-\Question Integration
-\Question Root finding
-\Question Add Documentation
+\Question Implement a function  \texttt{get\_center\_derivative} that takes two numpy arrays \texttt{x} and \texttt{y}, representing coordinates of points on a function graph. 
+You may assume that the x are evenly spaced, but they may be unsorted.
+Use  \texttt{numpy.argsort} to sort both  \texttt{x} and  \texttt{y} by their  \texttt{x}-positions.
+Then calculate the central derivatives $(y_{i+1}-y_{i-1})/(x_{i+1}-x_{i-1})$ by employing clever slices instead of a loop or other forms of iterations.
+Return the resulting array of numerical central derivatives and add basic documentation.
+The resulting array should have 2 fewer entries than the input.
+\Question With similar inputs as in the previous problem in a function \texttt{get\_trapezoid\_integral} , implement numerical integration of the resulting discrete function graph (after sorting by x), using the trapezoid rule: $(y_{i+1}*y_{i-1})(x_{i+1}-x_{i-1})/2.0$.
+This can again be achieved via efficient slicing and using the \texttt{numpy.sum} function as a reduce functionality.
+\Question Implement a root finding algorithm via bisection in a function \texttt{get\_biscection\_root}. 
+The function should take an argument  \texttt{x\_min} and an  \texttt{x\_max} setting the boundary for the search for a root of a function \texttt{f} at a maximum of \texttt{max\_steps} iterations, where the default value for the latter should be $20$.
+First check, whether  \texttt{f} has different signs on the boundary of the chosen interval.
+If not, log an error and throw an exception. (Set up a logger for this file based on what you did in the first exercise).
+Then iterate as follows a maximum of \texttt{max\_steps} times:
+In each iteration, calculate the middle point  \texttt{x\_mid} of the current interval  [\texttt{x\_min}, \texttt{x\_max}]. 
+Evaluate  \texttt{f} on \texttt{x\_mid}.
+Then replace the boundary of the interval, where  \texttt{f} has the same sign as in the middle with  \texttt{x\_mid}.
+At the end, after the iterations have finished, return the middel of the final interval as a result for the best guess for the root of the function.
+\Question Add Documentation for the above functions and at least one unit test each.
 \end{problem}
 
 \begin{problem}[title={Parallel numpy/scipy replacement}]
 \noindent
-\Question Let us employ our parallellized map and reduce functions to parallelize our numpy/scipy imitation functions from the prior exercise
-\Question add tests to make sure, the operation is identical to the result obtained by numpy/scipy.
-\Question Compare their performance to our previous sequential versions as well to the numpy/scipy implementation
-\Question What do we learn from the comparison in performance?
-\end{problem}
+\Question To try and mimic numpy's internal parallellization, use your previously implemented parallel map and reduce functions, to write parallel versions of the integration and derivative functions written in the prior exercise. 
+Use the fact that the individual terms of the central derivative as well as the individual pieces of area under the function graph in the integration can be calculated in parallel. 
+Potential combinations into the final result can be implemented using  \texttt{reduce}.
+\Question Add tests to make sure, the operation is identical to the result obtained by numpy/scipy by generating random y-coordinates and equally spaced x-coordinates (see: \texttt{numpy.linspace}) and putting them into your function and the corresponding numpy function.
 
-\begin{problem}[title={Adding tests to ensure correctness}]
-\noindent
-\Question Write tests to make sure that your custom-built functions perform the way it is expected (compare to reference function, check for hand-picked cases)
-\Question Put the tests in a different file
-\Question Group the tests appropriately so that Differentiation, integration and root finding have their own test group
+\Question Write tests to make sure that your custom-built functions perform the way they are expected by adding a few hand-picked cases. 
+E.g. integrate or calculate the derivative for a linear or constant function.
+\Question Put the tests for the numpy-imitations in a different file than the original function implementation.
+\Question Group the tests appropriately so that differentiation, integration and root finding have their own test group and can be run independently, but so that all tests belonging to each of the individual functions are run together.
 \end{problem}
 
 \begin{problem}[title={Measuring performance}]
+We want to use the test functions as a template to write a function to compare the speed of numpy and scipy functions to our own implementation
 \noindent
-\Question User the test functions as a template to write a function to compare the speed of numpy and scipy functions to our own implementation
-\Question Plot how the execution time of various functions behaves as a function of the input size
+\Question Look up how to measure time in python at the microsecond scale and output the time that it takes your parallel function and the numpy function to calculate the result. To get meaningful results, generate arrays with at least a few thousand or a million entries.
+\Question What do we learn from the comparison in performance?
+\Question Plot how the execution time of the different functions (derivative, integration) behaves as a function of the input size using matplotlib and sufficiently many datapoints.
 \Question Why does one solution perform so much better?
 \end{problem}
