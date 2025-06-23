@@ -60,6 +60,8 @@ if __name__ == "__main__":
 
     time_results = np.array(tmp)
 
+    #time_results = np.loadtxt("runtime_data.txt", ndmin=2)
+
     own_deriv = time_results[:, 0]
     np_deriv = time_results[:, 1]
     own_int = time_results[:, 2]
@@ -74,6 +76,8 @@ if __name__ == "__main__":
 
     plt.xlabel("Set size n")
     plt.ylabel("Runtime in [ns]")
+    plt.xscale("log")
+    plt.yscale("log")
     plt.legend()
 
     plt.tight_layout()
