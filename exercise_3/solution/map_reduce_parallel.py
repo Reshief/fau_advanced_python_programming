@@ -48,20 +48,21 @@ def map_parallel(func: Callable[..., R], *iterable: Sequence, min_executor_data_
 
     total_length = len(in_data)
 
-    number_available_threads = os.process_cpu_count()
+    number_available_threads = os.cpu_count()
 
-    num_executors: int = min(number_available_threads, int(
-        np.floor(total_length/min_executor_data_count)))
+    # We need at least one but at most as many executors as we have logical CPU cores
+    num_executors: int = max(1, min(number_available_threads, int(
+        np.floor(total_length/min_executor_data_count))))
 
     with ProcessPoolExecutor(max_workers=num_executors) as executor:
         result_futures: list[Future] = []
         for index_executor in range(num_executors):
             # This calculates the begin index using integer arithmetics for rounding
             # Will start at 0 and go up about total_length/num_executors per entry
-            begin_index = (total_length*index_executor)/num_executors
+            begin_index = int((total_length*index_executor)/num_executors)
             # This calculates the end index. As it uses the index +1 it will eventually exactly reach the end index
             # A neat trick to split the data into individual slices of approximately equal size
-            end_index = (total_length*(index_executor+1))/num_executors
+            end_index = int((total_length*(index_executor+1))/num_executors)
 
             # Get the slice of data
             data = in_data[begin_index:end_index]
@@ -118,20 +119,21 @@ def reduce_parallel(func: Callable[[C, N], C], combine: Callable[[C, C], C], ite
 
     total_length = len(in_data)
 
-    number_available_threads = os.process_cpu_count()
+    number_available_threads = os.cpu_count()
 
-    num_executors: int = min(number_available_threads, int(
-        np.floor(total_length/min_executor_data_count)))
+    # We need at least one but at most as many executors as we have logical CPU cores
+    num_executors: int = max(1, min(number_available_threads, int(
+        np.floor(total_length/min_executor_data_count))))
 
     with ProcessPoolExecutor(max_workers=num_executors) as executor:
         result_futures: list[Future] = []
         for index_executor in range(num_executors):
             # This calculates the begin index using integer arithmetics for rounding
             # Will start at 0 and go up about total_length/num_executors per entry
-            begin_index = (total_length*index_executor)/num_executors
+            begin_index = int((total_length*index_executor)/num_executors)
             # This calculates the end index. As it uses the index +1 it will eventually exactly reach the end index
             # A neat trick to split the data into individual slices of approximately equal size
-            end_index = (total_length*(index_executor+1))/num_executors
+            end_index = int((total_length*(index_executor+1))/num_executors)
 
             # Get the slice of data
             data = in_data[begin_index:end_index]
@@ -149,29 +151,3 @@ def reduce_parallel(func: Callable[[C, N], C], combine: Callable[[C, C], C], ite
             result = future.result() if result is None else combine(result, future.result())
 
         return result
-
-
-# 2.1a is just basic setup
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        sys.argv[0], description="Script to run some basic map and reduce operations. Here, we use list comprehensions to replace map and filter")
-
-    # We keep the log setup just in case
-    parser.add_argument(
-        "-log",
-        choices=["info", "debug", "warn", "error",],
-        default="warn",
-        help="The log level to be set on the logger"
-    )
-
-    # Allow for configuring the length of our lists
-    parser.add_argument(
-        "-n",
-        type=int,
-        default=2,
-        help="The length of the generated lists for this example"
-    )
-    args = parser.parse_args(sys.argv[1:])
-
-    loglevel = args.log
-    list_length = args.n
