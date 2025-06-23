@@ -9,3 +9,9 @@ Then the tests for map and reduce will be run.
 To run tests for exercise 3.3, run:
 ```python -m exercise_3.solution.ex_3_3```
 from the root directory of the project. 
+
+## Parallel scipy/numpy tests
+p
+To run tests for exercise 3.4, run:
+```ython -m exercise_3.solution.ex_3_4_test```
+from the root directory of the project. 

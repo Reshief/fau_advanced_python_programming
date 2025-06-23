@@ -40,7 +40,7 @@ def get_center_derivative_parallel(x: np.ndarray, y: np.ndarray) -> np.ndarray:
     upper_neighbors_x = x[2:]
     upper_neighbors_y = y[2:]
 
-    #return map_parallel(_center_derivative_helper, lower_neighbors_x, lower_neighbors_y, upper_neighbors_x, upper_neighbors_y, min_executor_data_count=20)
+    # return map_parallel(_center_derivative_helper, lower_neighbors_x, lower_neighbors_y, upper_neighbors_x, upper_neighbors_y, min_executor_data_count=20)
     return map(_center_derivative_helper, lower_neighbors_x, lower_neighbors_y, upper_neighbors_x, upper_neighbors_y)
 
 
@@ -80,35 +80,6 @@ def get_trapezoid_integral_parallel(x: np.ndarray, y: np.ndarray) -> np.float32:
     upper_neighbors_y = y[1:]
 
     return map_reduce_parallel(_integral_helper, _integral_sum_helper, _integral_sum_helper, lower_neighbors_x, lower_neighbors_y, upper_neighbors_x, upper_neighbors_y, reduce_initial=0.0, min_executor_data_count=20)/2.0
-
-
-def lin_f(x, m, t):
-    return x*m+t
-
-
-class TestCenterDerivativeParallel(unittest.TestCase):
-    def test_random_linear(self):
-        n = 501
-        data_x = np.linspace(0, n-1, n)
-        data_y = lin_f(data_x, 123.4, -234.33)
-
-        expected_res = np.gradient(data_y, data_x,)
-
-        result = get_center_derivative_parallel(data_x, data_y)
-        # Need to cut off padding at beginning and end of reference
-        assert_almost_equal(result, expected_res[1:-1])
-
-
-class TestTrapezoidIntegral(unittest.TestCase):
-    def test_random_linear(self):
-        data_x = np.linspace(0, 100, 100)
-        data_y = np.random.exponential(10, size=(100,))
-
-        from scipy.integrate import trapezoid
-        result = get_trapezoid_integral_parallel(data_x, data_y)
-        expected_res = trapezoid(data_y, data_x)
-
-        assert_almost_equal(result, expected_res)
 
 
 if __name__ == '__main__':
