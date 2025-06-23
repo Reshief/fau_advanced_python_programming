@@ -123,7 +123,7 @@ Use  \texttt{numpy.argsort} to sort both  \texttt{x} and  \texttt{y} by their  \
 Then calculate the central derivatives $(y_{i+1}-y_{i-1})/(x_{i+1}-x_{i-1})$ by employing clever slices instead of a loop or other forms of iterations.
 Return the resulting array of numerical central derivatives and add basic documentation.
 The resulting array should have 2 fewer entries than the input.
-\Question With similar inputs as in the previous problem in a function \texttt{get\_trapezoid\_integral} , implement numerical integration of the resulting discrete function graph (after sorting by x), using the trapezoid rule: $(y_{i+1}+y_{i-1})(x_{i+1}-x_{i-1})/2.0$.
+\Question With similar inputs as in the previous problem in a function \texttt{get\_trapezoid\_integral} , implement numerical integration of the resulting discrete function graph (after sorting by x), using the trapezoid rule: $(y_{i+1}+y_{i})(x_{i+1}-x_{i})/2.0$.
 This can again be achieved via efficient slicing and using the \texttt{numpy.sum} function as a reduce functionality.
 \Question Implement a root finding algorithm via bisection in a function \texttt{get\_biscection\_root}. 
 The function should take an argument  \texttt{x\_min} and an  \texttt{x\_max} setting the boundary for the search for a root of a function \texttt{f} at a maximum of \texttt{max\_steps} iterations, where the default value for the latter should be $20$.
