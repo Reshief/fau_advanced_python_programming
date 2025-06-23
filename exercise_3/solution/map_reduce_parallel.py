@@ -5,7 +5,7 @@ import sys
 import os
 from typing import List, Callable, Sequence, TypeVar, Optional
 from .map_reduce import map, reduce
-from concurrent.futures import ProcessPoolExecutor,Future
+from concurrent.futures import ProcessPoolExecutor, Future
 import numpy as np
 
 R = TypeVar("R")
@@ -31,6 +31,8 @@ def map_parallel(func: Callable[..., R], *iterable: Sequence, min_executor_data_
         an arbitrary number of sequences. `func` will be applied to all tuples created from entries at the same positions in `iterable`. 
         All sequences provided for `iterable` must have the same length.
         The types of values provided by the sequences must match the parameters of `func` in the order that the sequences are provided.
+    min_executor_data_count: int, optional
+        The minimum chunk size of data assigned to each executor process. 
 
     Returns
     --------
@@ -67,12 +69,12 @@ def map_parallel(func: Callable[..., R], *iterable: Sequence, min_executor_data_
             # Apply the map function in parallel
             result_futures.append(executor.submit(
                 _map_helper_func, func, data))
-        
+
         # Collect the results and return the combined list
         result = []
         for future in result_futures:
             result.extend(future.result())
-        
+
         return result
 
 
@@ -83,7 +85,7 @@ C = TypeVar("C")
 N = TypeVar("N")
 
 
-def reduce_parallel(func: Callable[[C, N], C], combine: Callable[[C, C], C], iterable: Sequence[N], initial: Optional[C] = None) -> C:
+def reduce_parallel(func: Callable[[C, N], C], combine: Callable[[C, C], C], iterable: Sequence[N], initial: Optional[C] = None, min_executor_data_count=5) -> C:
     """Function to mimic reduce() functionality.
 
     Takes an iterable to repeatedly call `func`(cumulative, next_entry) on. Will start with the first entry as a cumulative starting value, unless another initial value is provided as `initial`
@@ -98,6 +100,8 @@ def reduce_parallel(func: Callable[[C, N], C], combine: Callable[[C, C], C], ite
         The values to be reduced into one cumulative value
     initial: C, optional
         An optional initial cumulative value. If not provided, the first entry of `iterable` will be used as an initial cumulative value. Then the types N and C must match.
+    min_executor_data_count: int, optional
+        The minimum chunk size of data assigned to each executor process. 
 
     Returns
     --------
@@ -109,23 +113,42 @@ def reduce_parallel(func: Callable[[C, N], C], combine: Callable[[C, C], C], ite
     functools.reduce: For similar functionality
 
     """
-    # Get an iterator for the sequence
-    iterator = iter(iterable)
-    # Initialize the cumulative value either with the provided initial value or with the first entry of the sequence
-    cumulative = initial if initial is not None else next(iterator)
 
-    # We do not know how long the iteration will take, so assume it will go on forever
-    while True:
-        try:
-            # See if there is another entry
-            next_entry = next(iterator)
-            # Reduce to a new cumulative value
-            cumulative = func(cumulative, next_entry)
-        except StopIteration:
-            # If there is no entry, break the loop
-            break
+    in_data = [params for params in iterable]
 
-    return cumulative
+    total_length = len(in_data)
+
+    number_available_threads = os.process_cpu_count()
+
+    num_executors: int = min(number_available_threads, int(
+        np.floor(total_length/min_executor_data_count)))
+
+    with ProcessPoolExecutor(max_workers=num_executors) as executor:
+        result_futures: list[Future] = []
+        for index_executor in range(num_executors):
+            # This calculates the begin index using integer arithmetics for rounding
+            # Will start at 0 and go up about total_length/num_executors per entry
+            begin_index = (total_length*index_executor)/num_executors
+            # This calculates the end index. As it uses the index +1 it will eventually exactly reach the end index
+            # A neat trick to split the data into individual slices of approximately equal size
+            end_index = (total_length*(index_executor+1))/num_executors
+
+            # Get the slice of data
+            data = in_data[begin_index:end_index]
+
+            # Apply the reduce function in parallel to the individual slices
+            result_futures.append(executor.submit(
+                reduce, func, data, initial))
+
+        # Collect the results and return the combined list
+        result = None
+        for future in result_futures:
+            # If we have no prior entry, we use the current result as a basis.
+            # For all subsequent futures, we use the combine function to merge
+            # with an existing resul
+            result = future.result() if result is None else combine(result, future.result())
+
+        return result
 
 
 # 2.1a is just basic setup
