@@ -45,10 +45,20 @@ def run_sized_derivative_integral(n, rep=3):
 
 
 if __name__ == "__main__":
+
     n_opts = [int(x)
               for x in np.exp(np.linspace(np.log(4), np.log(1e7), num=30))]
 
-    time_results = np.array([run_sized_derivative_integral(i) for i in n_opts])
+    tmp = []
+    with open("runtime_data.txt", "w") as out:
+        for n in n_opts:
+            own_deriv, np_deriv, own_int, sp_int = run_sized_derivative_integral(
+                n)
+            out.write("{:.6e}\t{:.6e}\t{:.6e}\t{:.6e}\n".format(
+                own_deriv, np_deriv, own_int, sp_int))
+            tmp.append([own_deriv, np_deriv, own_int, sp_int])
+
+    time_results = np.array(tmp)
 
     own_deriv = time_results[:, 0]
     np_deriv = time_results[:, 1]
@@ -57,10 +67,10 @@ if __name__ == "__main__":
 
     plt.clf()
 
-    plt.plot(n_opts, own_deriv, "own deriv parallel")
-    plt.plot(n_opts, np_deriv, "np deriv")
-    plt.plot(n_opts, own_int, "own trapezoid parallel")
-    plt.plot(n_opts, sp_int, "scipy trapezoid")
+    plt.plot(n_opts, own_deriv, label="own deriv parallel")
+    plt.plot(n_opts, np_deriv, label="np deriv")
+    plt.plot(n_opts, own_int, label="own trapezoid parallel")
+    plt.plot(n_opts, sp_int, label="scipy trapezoid")
 
     plt.xlabel("Set size n")
     plt.ylabel("Runtime in [ns]")
