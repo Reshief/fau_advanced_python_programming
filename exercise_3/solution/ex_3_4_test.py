@@ -45,7 +45,7 @@ class TestCenterDerivativeParallel(unittest.TestCase):
         assert_almost_equal(result, expected_res)
 
 
-class TestTrapezoidIntegral(unittest.TestCase):
+class TestTrapezoidIntegralParallel(unittest.TestCase):
     def test_random(self):
         data_x = np.linspace(0, 100, 100)
         data_y = np.random.exponential(10, size=(100,))
