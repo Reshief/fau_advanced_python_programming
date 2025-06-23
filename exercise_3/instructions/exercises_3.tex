@@ -142,7 +142,7 @@ At the end, after the iterations have finished, return the middel of the final i
 \Question To try and mimic numpy's internal parallellization, use your previously implemented parallel map and reduce functions, to write parallel versions of the integration and derivative functions written in the prior exercise. 
 Use the fact that the individual terms of the central derivative as well as the individual pieces of area under the function graph in the integration can be calculated in parallel. 
 Potential combinations into the final result can be implemented using  \texttt{reduce}.
-\Question Add tests to make sure, the operation is identical to the result obtained by numpy/scipy by generating random y-coordinates and equally spaced x-coordinates (see: \texttt{numpy.linspace}) and putting them into your function and the corresponding numpy function.
+\Question Add tests to make sure, the operation is identical to the result obtained by numpy/scipy by generating random y-coordinates and equally spaced x-coordinates for the trapezoid and an equally spaced set of x coordinates with a linear corresponding y-set (see: \texttt{numpy.linspace}) and putting them into your function and the corresponding numpy (gradient)/scipy (trapezoid) function.
 \Question Write tests to make sure that your custom-built functions perform the way they are expected by adding a few hand-picked cases. 
 E.g. integrate or calculate the derivative for a linear or constant function.
 \Question Put the tests for the numpy-imitations in a different file than the original function implementation.
