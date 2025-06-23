@@ -37,7 +37,7 @@ def map_parallel(func: Callable[..., R], *iterable: Sequence, min_executor_data_
     Returns
     --------
     List of R
-        The list of the results obtained through 
+        The list of the results obtained through parallel application of func to the entries in *iterable
 
     See also
     --------
@@ -151,3 +151,51 @@ def reduce_parallel(func: Callable[[C, N], C], combine: Callable[[C, C], C], ite
             result = future.result() if result is None else combine(result, future.result())
 
         return result
+
+
+# For map result type
+R = TypeVar("R")
+# For the cumulative type
+C = TypeVar("C")
+# For the next entry
+N = TypeVar("N")
+
+
+def map_reduce_parallel(func_map: Callable[..., R], reduce_func: Callable[[N, R], N], combine_func: Callable[[N, N], N], *iterable: Sequence, reduce_initial: N = None, min_executor_data_count=5) -> List[N]:
+    """Function to apply first apply a map with func_map to the input iterables and then apply reduce with reduce_func and combine_func to the result.
+
+    The function `func_map` must accept one argument for each `iterable` provided.
+    Evaluation will be eager.
+    The reduce() function will be called with reduce_func, combine_func and reduce_initial as arguments. 
+    Overall, this function is equivalent to 
+    reduce_parallel(reduce_func, combine_func, map_parallel(func_map, iterable, min_executor_data_count), min_executor_data_count, initial=reduce_initial)
+
+    Parameters
+    ----------
+    func_map : Callable[..., R]
+        A function, accepting exactly as many arguments as there are positional iterables in `iterable`. The result will be an entry in the resulting list
+    *iterable
+        an arbitrary number of sequences. `func` will be applied to all tuples created from entries at the same positions in `iterable`. 
+        All sequences provided for `iterable` must have the same length.
+        The types of values provided by the sequences must match the parameters of `func` in the order that the sequences are provided.
+    min_executor_data_count: int, optional
+        The minimum chunk size of data assigned to each executor process. 
+    reduce_func: Callable[[N, R], N]
+        Function accepting a cumulative value and the next entry and returning the next cumulative value
+    combine_func: Callable[[N, N], N]
+        Function combining the results of calls to reduce_func() into one aggregate result. Allows for the parallel execution of reduce and then eventual recombination before returning.
+    reduce_initial: N, optional
+        An optional initial cumulative value. If not provided, the first entry of the result of the map call will be used as an initial cumulative value. Then the types N and R must match.
+
+    Returns
+    --------
+    List of N
+        The list of the results obtained through first calling map and then reduce
+
+    See also
+    --------
+    map_parallel, reduce_parallel
+
+    """
+
+    return reduce_parallel(reduce_func, combine_func, map_parallel(func_map, *iterable, min_executor_data_count=min_executor_data_count), initial=reduce_initial, min_executor_data_count=min_executor_data_count)
