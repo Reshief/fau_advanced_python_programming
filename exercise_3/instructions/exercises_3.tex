@@ -67,7 +67,7 @@ Instead, create a local function that gets passed the function \texttt{f} and th
 Eventually add documentation to your \texttt{map} function to allow for other people using it.
 Explain all parameters, its parallel implementation and the requirements that this imposes on the function\texttt{f}.
 Also declare if you are using processes that the function cannot access shared data.
-\Question Add a Test class for the parallel \texttt{map} function using the pytest framework in which you implement a few unit tests to check the functionality of your \texttt{map} function. 
+\Question Add a Test class for the parallel \texttt{map} function using python's \texttt{unittest} framework (see lecture slides) in which you implement a few unit tests to check the functionality of your \texttt{map} function. 
 Some scenarios you should check:
 \begin{enumerate}
     \item Make sure that your \texttt{map} function works correctly with one input iterator/list and a function taking one input (e.g. a function calculating the square of its argument). You can check the results by iteratively calculating the intended result in a for loop and then comparing with the result of the \texttt{map} invocation.
