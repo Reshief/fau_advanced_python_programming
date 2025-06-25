@@ -22,6 +22,12 @@
 \usepackage{braket}
 \usepackage{subfiles}
 \usepackage{siunitx}
+\usepackage{listings}
+\lstdefinelanguage{Toml}{
+    comment = [l]{\#},
+    keywords = {true, false},
+    morestring = [b]{"}
+}
 
 \newcommand{\del}{\partial}
 \newcommand{\eqbox}[1]{\mbox{\boxed{#1}}}
@@ -50,42 +56,145 @@ Exercise sheet 4: Modules, Documentation and testing}
 
 
 \begin{problem}[title={Using files and directories as modules}]
+    We want to work on packaging our code into a python module that can then be installed via pip. 
+    For this purpose, we will need to set up the code, then add some tests and documentation and finally set up the packaging.
+    Here, we will first start with setting up our code in an appropriate manner. 
+    For this exercise, we will try and package our implementations of \texttt{map}, \texttt{reduce} and  \texttt{map\_reduce} (the sequential and the parallel versions) as well as our re-implementations of scipy and numpy functions into a module.
 \noindent
-\Question Pack previously defined functions in a file called advanced_functions.
-\Question Add documentation to the file like for a module 
-\Question Add a function to output the module name using \_\_name\_\_
-\Question Create a directory advanced\_module and a file called \_\_init\_\_.py in there
-\Question Print out the module name \_\_name\_\_ in the \_\_init\_\_.py script and create two more files arithmetics.py and func.py. 
-Add functions to get the square root of the absolute value of a number as well as the function abs\_sub, that takes the absolute value of the difference of the abs of its two parameters to arithmetics.py, add documentation. 
-Add functions to load the first two lines and the last two lines from a file in func.py
-\Question Create a main script main.py and import the module advanced_functions and the module advanced_module. 
-What do you notice when you execute the script? 
-\Question Use the function from the advanced\_functions module to output the module name, which module name does it print compared to a print(\_\_name\_\_) statement in main.py?
-\Question Add loggers to your modules using the \_\_name\_\_ variable to determine the module name and add them to your module functions to log infos, warnings and errors
-\Question Use the functions from the other modules to read the first lines from the file mystic.txt and calculate the abs\_sub value of the numbers in the first two lines and calculate the abs square roots for the numbers in the last two lines. Output your values using a logger in your main file. 
-\Question Add some function that can trigger an error state and test that it logs correctly. 
-\Question Add the map and the reduce function to their own helper-module, document it, add tests and generate a documentation file. (look up how to do that)
+\Question Set up your project structure. We will first need an empty folder as a base for our project. 
+Then add a folder \texttt{fauap\_advanced\_functions} for the source code, i.e. the python modules, 
+a folder \texttt{tests} for our tests,
+a folder \texttt{docs} for putting documentation in,
+and a file \texttt{Readme.md} to put the most relevant general information into.
+\Question We now want to pack all our prior functions into the \texttt{fauap\_advanced\_functions} package. 
+To do this, put all functions related to \texttt{map} and \texttt{reduce} in their sequential forms into a module (i.e. a file) \texttt{map\_reduce.py} in the \texttt{fauap\_advanced\_functions} folder. 
+Then add their parallel versions into a file \texttt{map\_reduce\_parallel.py} in the \texttt{fauap\_advanced\_functions} folder. 
+Finally add your custom reimplementation of numpy/scipy functions into a file \texttt{sci\_num.py} in the \texttt{fauap\_advanced\_functions} folder. 
+To turn the folder \texttt{fauap\_advanced\_functions} into a package, you also need to add a file \texttt{\_\_init\_\_.py} to the \texttt{fauap\_advanced\_functions} folder.
+This init-script is called/executed first, whenever your import your package. 
+Only if a folder contains an init-script, does the python interpreter consider it a package that can be imported. 
+Within this init-script, you should import all of the functions you want to be available when someone writes \texttt{import fauap\_advanced\_functions} from your other files as well as all packages necessary for your other modules.
+For now, let us leave the file mostly empty, but add a function \texttt{say\_hello}, which prints \texttt{Hello:} followed by the value of \texttt{\_\_name\_\_}. 
+As all of the code in \texttt{\_\_init\_\_.py} is executed when you import a package, you could add a call  \texttt{say\_hello()} to the code and it would print \texttt{Hello <package\_name>} whenever you import the package. 
+This also means that you should be careful not to unnecessarily execute code here as it will be executed whenever the package is loaded.
+\Question Your files may need to import functions from other files in this directory. You can prefix the module name with a dot (e.g. \texttt{.map\_reduce}) to import a function from a module within the same directory. 
+Make sure that your imports of all files in the directory are correctly pointing to the local files.
+\Question Add a module \texttt{arithmetics.py} in which you add a custom function \texttt{verbose\_sqrt}, which effectively just calculates the square root of its argument. 
+However, it will first check whether the argument is negative. 
+If it is negative, output a warning message via a logger that you initialize within that file with the \texttt{\_\_name\_\_} label. 
+Also, if the argument is negative, raise/throw a ValueError.
+Document the function to a reasonable degree.
+\Question Add documentation to the files in the package directory as the lecture has described for modules. 
+The functions themselves should already have been documented in prior exercises.
+\Question You can make a package executable via \texttt{python -m <package\_name>} by adding a \texttt{\_\_main\_\_.py} file to it. 
+Use this to add an interface to your module, where the user can pass a floating point number to the \texttt{\_\_main\_\_.py} script and it will print the result of your \texttt{verbose\_sqrt} function. 
+The file should be documented and guarded, i.e. check for \texttt{\_\_name\_\_ == "\_\_main\_\_"} before executing the described code. 
+Make sure that you correctly set up logging in the \_\_main\_\_ script and that you correctly import the \texttt{verbose\_sqrt} function. 
+\Question Create a main script \texttt{main.py} in the root directory of your project and import the module \texttt{fauap\_advanced\_functions} (possibly with a leading dot to indicate that it is a local import).
+What do you notice when you execute the script even without further code if you have added a call to \texttt{say\_hello} in your init-script? 
+\Question Use the function \texttt{say\_hello} imported from our package to output the module name.
+ Which module name does it print compared to a \texttt{print(\_\_name\_\_)} statement in \texttt{main.py}?
+\Question Consider adding loggers to your package's other modules using the \_\_name\_\_ variable to determine the module name and add them to your modules' functions to log infos, warnings and errors where appropriate. 
+E.g. log a warning if the input to the derivative or integration function do not have the minimum reasonable amount of data points for calculation and add debug outputs of the number of created worker processes to the parallel map and reduce implementations.
 \end{problem}
-
 
 \begin{problem}[title={Building tests for our modules}]
 \noindent
-\Question Add tests for your functions to check that they work, also for the modules defined via files or as a directory
-\Question Run the tests and verify correct operation. Fix any errors you notice and Add comments explaining the intention of your tests
-\end{problem}
-
-\begin{problem}[title={Making our module installable with pip}]
-\noindent
-\Question We want to use pip -e . to install our module advanced\_module so that any python script on our user can access it. (Link to example and documentation)
-\Question Install the module to the user
-\Question Remove the module from the user
-\Question Add a Readme.md file explaining the function of your module.
+\Question Add tests for your package's modules' functions to check that they work. You should have written these tests in previous exercises, now move them to files in the \texttt{test} folder of our package and make sure they properly import the functions they are testing from the package. 
+You may have to use relative imports as long as our package has not been installed. 
+You can use two leading dots to go up one directory, e.g. \texttt{import ..fauap\_advanced\_functions.map\_reduce} should import the map\_reduce module of our package from the \texttt{test} directory.
+\Question Run the tests and verify correct operation. Fix any errors you notice and add comments explaining the intention of your tests where they had not yet been provided.
 \end{problem}
 
 \begin{problem}[title={Generating documentation for your module}]
+    A good package has some documentation to go with it. Of course we have already written documentation within the code files, but for a new user, it is preferrable to have a version of the documentation that can be read either in the browser (as html) or as a pdf. 
+    Here, we want to generate such a documentation from our code files.
 \noindent
-\Question Use pdoc3 to generate a documentation page for your module
+\Question Use pdoc3 (see \url{https://pdoc3.github.io/pdoc/} and \url{https://pypi.org/project/pdoc3/}) to generate a documentation page for your entire project as html. 
+Output the documentation into the directory \texttt{docs}.
+The documentation page \url{https://pdoc3.github.io/pdoc/doc/pdoc/} has examples for generating the html source
+\Question Also familiarize yourself with generating documentation for a single module/file. 
+\Question Generate documentation in PDF format and put it into the \texttt{docs}-directory as well. You should not specify the \texttt{-\.-html} format specifier, but an appropriate other format instead. 
+Look at the documentation of pdoc if necessary to figure out the correct settings
 \end{problem}
 
+\begin{problem}[title={Making our module installable with pip}]
+    We want to use \texttt{pip install -e .} to do a quick install of our local module \texttt{fauap\_advanced\_functions} from the current directory so that any python script on our user can access it. 
+    In this exercise, we do not want to fully build, bundle and upload the package to pypi using test-pypi as described in the lecture. 
+    You should, however, consider doing a full test run of publishing your package to test-pypi following the steps as described in the lecture slides.
+    Within all steps of this exercise, make sure you appropriately replace placeholders with your appropriate data.
+\noindent
+\Question Add content to the Readme.md file explaining the function of your module, where to find and run tests as well as where to find the documentation. 
+Also add your own contact information and an appropriate license. 
+You can look up a list of open source licenses online, any of them will do, however it may benefit you figuring out the slight differences between options.
+\Question Create a script \texttt{setup.py} in your project's root directory. 
+    This is required for an editable installation that we are trying to perform here.
+    It is a legacy feature but due to backwards compatibility always a good idea to provide it. 
+    The file should contain the following:
+    \begin{lstlisting}[language=Python]
+import setuptools 
+if __name__ == "__main__": 
+   setuptools.setup(
+        name='fauap_advanced_functions',
+        # Use a semantic version number. 
+        # If your upload to pypi, no two uploads may have the same version
+        version='0.1.0', 
+        description='<provide a reasonable description>',
+        url='<add url to the git repository once you have it>',
+        author='<add your name>',
+        author_email='<add your email address>',
+        license='BSD 2-clause', # This may be any license you choose
+        packages=['fauap_advanced_functions'],
+        # This needs all packages your code depends on
+        install_requires=['numpy', 'scipy'], 
+
+        # You can put whichever classifiers you want
+        # This is just a suggestion
+        classifiers=[
+            'Development Status :: 1 - Planning',
+            'Intended Audience :: Science/Research',
+            'Operating System :: POSIX :: Linux',        
+            'Programming Language :: Python :: 3',
+        ],
+    )
+\end{lstlisting}
+\Question Create a \texttt{pyproject.toml} file in the root directory of your project. 
+You need to specify the build backend first. Here, we use setuptools as we did in \texttt{setup.py}.
+\begin{lstlisting}[language=Toml]
+[build-system]
+    requires = ["setuptools>=61.0.0", "wheel"]
+    build-backend = "setuptools.build_meta"
+\end{lstlisting}
+    Afterwards, you need to add project specification and meta-data similar to our \texttt{setup.py} script.
+    Make sure your information matches the \texttt{setup.py} script.
+    Also make sure you have a fitting python version requirement (end of file).
+    When in doubt, use the python version \texttt{python -\.-version} tells you on your development machine.
+\begin{lstlisting}[language=Toml]
+[project]
+    name = "fauap_advanced_functions"
+    version = "0.1.0"
+    description = "<provide a reasonable description>"
+    readme = "README.md"
+    authors = [{ name = "<add your name>", 
+    email = "<add your email address>" }]
+    license = { file = "LICENSE" }
+    
+    classifiers = [
+            'Development Status :: 1 - Planning',
+            'Intended Audience :: Science/Research',
+            'Operating System :: POSIX :: Linux',        
+            'Programming Language :: Python :: 3',
+    ]
+    keywords = ["map", "reduce", "scientific processing"]
+    
+    dependencies = [ "numpy", "scipy", ]
+requires-python = ">=3.5"
+\end{lstlisting}
+\Question In our project manifest \texttt{pyproject.toml} we referred to a \texttt{LICENSE} file. 
+Create that file in the root of your directory and put the appropriate license text for the license you have chosen in there. 
+If you are struggling, use \url{https://choosealicense.com/}, which for example suggests \url{https://choosealicense.com/licenses/mit/} for simple and permissive code licensing.
+\Question Install the current package for the current user using \texttt{pip install -e .}; Afterwards, you can test that you can now import from the module \texttt{fauap\_advanced\_functions} with no relative leading dots. 
+\Question Remove the module from the user by running \texttt{pip uninstall fauap\_advanced\_functions} to clean up the installation.
+\end{problem}
 
 \end{document}
