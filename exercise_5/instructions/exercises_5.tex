@@ -58,9 +58,9 @@ Exercise sheet 5: Git version control}
 %\end{problem}
 
 \begin{problem}[title={Some git nomenclature}]
+\noindent
 To be able to better understand git, its usual errors and use cases, it is important to know a few terms of the nomenclature surrounding git. 
 Familiarize yourself with the following terms and potential differences:
-\noindent
 \Question Plumbing vs. porcellain commands: What is the difference and which of the command we have talked about in the lecture are part of which group?
 \Question Blob vs. Tree vs. Commit: What do these terms refer to, how do they correspond to common terms in computer use and how does git use these in its usual version control workflow?
 \Question Working copy/directory vs. Index/Staging area vs. Repository vs. Remote: 
@@ -71,10 +71,10 @@ In which order do changes to files flow through these stages of storage/version 
 \end{problem}
 
 \begin{problem}[title={Setting up a git repository the simple way}]
+\noindent
 In the lecture, we have illustrated the details of creating a git repository manually.
 In practice, you will rarely have to manually set up object storage, tree writes or a manual commit yourself. 
 Here, we instead want to set up a repository in a way that you may go about it in your scientific work through porcellain commands.
-\noindent
 \Question Go to the folder of the previous exercise, where you set up the package structure for your pypi package project to be installed to a local user. 
 We now want to put that folder under version control and create a git project in an existing folder structure. 
 You can do this, by calling \texttt{git init <directory>}, where the \texttt{<directory>} option refers to the folder where you want to create the git repository. 
@@ -115,13 +115,93 @@ You can also confirm this with \texttt{git status} if the files in your project 
 \end{problem}
 
 \begin{problem}[title={Dealing with remotes}]
-\noindent
-\Question 
+\noindent We now want to incorporate remotes (or at least "a" remote) into our project as a remote backup and to allow for collaboration between different developers and computers. 
+You have multiple options to go about your choice of a git provider. 
+Generally, you can go with \texttt{github} or \texttt{gitlab} as a recommendation. 
+Both offer free hosting of projects and you can just create a free account on their cloud services. 
+\texttt{gitlab} can also be downloaded and installed on your own computer or server if you want.
+\Question The university hosts a gitlab server for computational sciences that we can use for our project test purposes. 
+You can find the service at \url{https://gitlab.cs.fau.de}. 
+Use the option to log in with your university account (SSO/Single Sign On) and your account should be automatically created.
+This instance of gitlab is limited in how much storage you may use with your project. 
+Don't upload unnecessary data or your projects may be deleted automatically after a warning email.
+For github or the cloud gitlab, the account creation may vary and other restrictions may apply for free accounts.
+\Question Create a project on the gitlab. As a name for this exercise, \texttt{fauap\_advanced\_functions} would be appropriate. 
+The projects are located in namespaces (or groups), meaning that the same project name may exist for different users and groups. 
+You should add a short description of the project on the creation page and for now set the project to private. 
+Then create the project.
+\Question Now that you see the project page, gitlab will provide you with some examples of how to clone the empty project or how to add the empty project as a remote to an existing local repository. 
+We want to add a remote called \texttt{origin} that points towards this gitlab project. 
+For this, we need the project url. 
+Click on the blue "Code" button and you should see an https and an ssh link for referring to the remote. 
+With the https link you will have to specify your password every time you try to interact with the remote. 
+We therefore recommend using the ssh link (Looks something like: \url{git@gitlab.cs.fau.de:<user>/<project>.git}. Don't worry, the user here is always git, no need to modify it). Copy the ssh link.
+In your local project, run \texttt{git remote add origin <url>}, where you put the ssh link in place of the url placeholder. 
+if you then run \texttt{git remote} you should see the \texttt{origin} remote listed and if you run \texttt{git remote get-url origin}, it should specify the ssh link you have copied previously.
+\Question Now, to interact with the remote, we need to set up the ssh connection. For this, we need to put our public ssh key from the local machine into gitlab. 
+The local key is available in \texttt{\tilde{}/.ssh/id_<method>.pub} in your local home directory. The method refers to the encryption algorithm used and may vary. 
+Copy the contents of this file. It should be a text file with contents of the form \texttt{ssh-<method> <encoded key> <key name/comment>}. 
+Now go click on your user avatar on gitlab, go to ">Preferences > SSH-Keys". If there are already keys registered with your account, you can manage them here.
+Click "Add new key" and copy your public key into the big text field. You can also specify and expiry date for the key and assign a name. 
+The name should tell you, which machine the key is on in case you ever have to figure out, which of your keys has been compromised. 
+Confirm the addition of the key. 
+Now you should be able to interact with your remote \texttt{origin} via the usual commands.
+\Question We want to publish our branches to the remote server. We first need to set up git to automatically use the remote \texttt{origin} for push and pull operations. 
+For this, use \texttt{git branch -u origin develop} to set the upstream (i.e. the default remote) for branch \texttt{develop} to \texttt{origin}.
+Depending on what your main/master branch is called, to the same for that, i.e.: \texttt{git branch -u origin master} or \texttt{git branch -u origin main}.
+Now, to publish your develop branch, run \texttt{git push}. 
+Git may tell you to set up your author name and email address using \texttt{git config --global user.email "<your email address>"} and \texttt{git config --global user.name "<your name>"}. 
+Put your name (can be an alias) and your email address (you can use your fau address here, normally you would use either a public email or an email related to the entity that owns the project or employs you) into these commands.
+Then try and repeat the command. 
+Follow git instructions if further issues arise. 
+When the commands finishes, you should have successfully published the branch "develop" to the remote. 
+You now also need to publish the main or master branch. For this you can either switch to the main branch using \texttt{git checkout main} and then push again or you can run \texttt{git push --all origin} to publish all branches to the remote \texttt{origin}.
+\Question Go to the project page on gitlab and confirm that now there are two branches main and develop listed. 
 \end{problem}
 
-\begin{problem}[title={Setting up a git workflow: Adding functionality through branches}]
-\noindent
-\Question 
+%\begin{problem}[title={Setting up a git workflow: Adding functionality through branches}]
+%\noindent
+%\Question 
+%\end{problem}
+
+\begin{problem}[title={Cloning the project again from the remote and setting up a release}]
+\noindent Let us now pretend that we do not have the project locally yet. 
+Go to a different folder in your home, create a folder \texttt{fauap\_advanced\_functions\_dev} and clone the project from gitlab into it.
+\Question To clone the project, go into the created folder and run \texttt{git clone <ssh_url_of_origin> .}. 
+The full stop \texttt{.} specifies the current directory as the place to put the project.
+Per default, your project may be set up to have \texttt{develop} as your default branch in gitlab. 
+If that is the case and you are on \texttt{develop} after cloning, you can change this behavior in your Project under "> Settings > Repository > Branch defaults".
+Just select the main branch and save. 
+\Question We now want to execute a common workflow and merge the develop branch into main to create a release. 
+Due to us cloning the project, in this repository, the remotes should automatically have been set up. 
+The remote \texttt{origin} should already be available and we should be able to switch to a branch \texttt{develop} and a branch \texttt{main} via \texttt{git checkout <branchname>}.
+Make sure that you are on the main branch, switch to it if necessary. 
+You can confirm your current branch with \texttt{git status} or \texttt{git branch}.
+Now that we are on the main branch, we want to merge the \texttt{develop} branch into the \texttt{main} branch.
+The command to do this is \texttt{git merge develop} if you already have the branch develop checked out locally or \texttt{git merge origin/develop} if the file does not exist locally yet. 
+As mentioned in the lecture, when merging a feature branch, it may be useful to compress all individual commits on the feature branch into one commit to keep the history clean, e.g. from typo correction commits, etc.
+In that case, you may create a \texttt{squash} merge commit by running \texttt{git merge --squash <branchname>}. 
+There are arguments pro and contra squash commits. 
+In some cases, you may want to maintain the context provided by the individual commits, in other cases you may want to keep the history clean and use \texttt{--squash} instead. 
+\Question you now should have a new commit on the master branch, that needs to be published to get the remote up to date. 
+Push the current state of the master branch. 
+Confirm that the main/master branch on the gitlab now contains all of the files previously commited to \texttt{develop}.
+\Question Now, we want to add a tag to comemorate this initial commit as version \texttt{v0.0.1}.
+Use \texttt{git tab <tag name> -m <tag message>} to create the tag on the current main branch. 
+Use our version string \texttt{v0.0.1} as the tag name and add a tag message specifying that this is the initial project setup after exercise 5.
+Make sure that the tag has been create with \texttt{git tag --list}. 
+Now we want to publish the tag using \texttt{git push origin tag <tag name>} to publish this tag to the remote. 
+The tag name is again the version string. 
+Once you push the tag, it should be visible on the gitlab in the "Tag" section on the right hand side under "project information".
+Confirm that the tag is visible and has the desired message associated with it. 
+\Question Finally, we want to turn our project tag into a full release of the project state. 
+Click on the "Create release" button in the tag overview on the tag you want to create the release from. 
+Now add a name vor the release (E.g. "Version 0.0.1 release"), set the release date if desired, set a release message, for which you can include the message of your tag with the checkbox. 
+The release message usually includes a list of all new features, all fixed issues, all removed features and potentially some warnings related to compatibility issues. 
+In some sense, it has the same information as module documentation in python. 
+The more useful your release name and message, the easier it will be for others to find the relevant version they need. 
+Then click "Create release" again and you should now see the new release listed under "Releases" in "project inforamtion". 
+The release should contain a zip file of the full project state relevant for publications but it can also be extended to contain compiled versions of your project if it is a project in other programming languages. 
 \end{problem}
 
 %\maketitle 
@@ -130,3 +210,4 @@ You can also confirm this with \texttt{git status} if the files in your project 
 
 
 \end{document}
+ 
