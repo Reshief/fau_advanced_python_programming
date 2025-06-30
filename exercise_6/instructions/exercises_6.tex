@@ -43,31 +43,44 @@
 \setcounter{problemset}{2}
 
 \title{{\Large Advanced Python for Research Projects} \\[0.3cm] 
-Exercise sheet 6: Git version control}
-
+Exercise sheet 6: Collaboration and automation}
 \begin{document}
 %\maketitle 
 
 
-\begin{problem}[title={Setting up a git repository manually}]
+\begin{problem}[title={Working with other members}]
 \noindent
-\Question 
+\Question Set up a standard project on the university gitlab.
+\Question Add another member.
+\Question Come up with a small project (e.g. writing a simple many-body simulation with gravity)
+\Question Plan the project in a way that profits from the multi-cores on modern computers. Plan for documentation and testing to occur. 
+For this, identify key functionality that needs to be tested and identify interaction points with the user that need documentation.
+\Question Agree on a git workflow (preferrably with feature branches)
+\Question Work together to implement the parts necessary for your project on feature branches. Ask for feedback before merging through pull requests
+\Question Use issues to keep track of what has been done and what needs to be done
 \end{problem}
 
-\begin{problem}[title={Setting up a git repository the simple way}]
+\begin{problem}[title={Automated testing}]
 \noindent
-\Question 
+\Question Write tests for key functionality of your code, e.g. writing the output to file, running simulations for a certain number of bodies, for how the input reading works, etc.
+\Question Run these tests locally to confirm they are working
+\Question Setup git to automatically run these tests (on gitlab)
+\Question Test on the university gitlab, that the tests are run and inspect the results
+\Question Open issues for all aspects that need fixing and fix them with a hotfix branch. 
 \end{problem}
 
-\begin{problem}[title={Dealing with remotes}]
+\begin{problem}[title={Creating a release}]
 \noindent
-\Question 
+\Question Make sure that your code contains installation, usage and example information before creating the release
+\Question Now that you are confident in your code performing the way it should, merge features and hotfixes into your main branch and create a release
+\Question Add a useful explanation to your release.
 \end{problem}
 
-
-\begin{problem}[title={Setting up a git workflow: Adding functionality through branches}]
+\begin{problem}[title={FAIR principles}]
 \noindent
-\Question 
+\Question Create an Account on ZENODO
+\Question Download the release zip from the git provider and import it into ZENODO to create a documented archive
+\Question Add all necessary meta-information for your Project to be well-documented, including contributors, Usage-Information, a link to the git repository, etc. 
 \end{problem}
 
 \end{document}
