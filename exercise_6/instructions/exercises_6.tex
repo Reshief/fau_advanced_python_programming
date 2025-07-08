@@ -40,47 +40,58 @@
 \widowpenalty10000
 \clubpenalty10000
 
-\setcounter{problemset}{2}
+\setcounter{problemset}{6}
 
 \title{{\Large Advanced Python for Research Projects} \\[0.3cm] 
-Exercise sheet 6: Collaboration and automation}
+Exercise sheet 6: Collaboration and FAIR principles}
 \begin{document}
 %\maketitle 
 
 
-\begin{problem}[title={Working with other members}]
-\noindent
-\Question Set up a standard project on the university gitlab.
-\Question Add another member.
-\Question Come up with a small project (e.g. writing a simple many-body simulation with gravity)
-\Question Plan the project in a way that profits from the multi-cores on modern computers. Plan for documentation and testing to occur. 
-For this, identify key functionality that needs to be tested and identify interaction points with the user that need documentation.
-\Question Agree on a git workflow (preferrably with feature branches)
-\Question Work together to implement the parts necessary for your project on feature branches. Ask for feedback before merging through pull requests
-\Question Use issues to keep track of what has been done and what needs to be done
+\begin{problem}[title={FAIR principles - Findability}]
+\noindent We want to carry out final steps to achieve true FAIR publication standards. 
+For this, we need to make our code/data uniquely addressible using an open, standard protocol like http(s)-links using the DOI-standard. 
+A commonly used provider for digital object identifiers for publicly available data is ZENODO. 
+We will use ZENODO to upload a release of our code and have it associated with a DOI that can then permanently point to that version.
+\Question Create an Account on ZENODO (\url{https://zenodo.org}). 
+We recommend using your university email which you would use for scientific publications.
+You can also create an ORCID (\url{https://orcid.org/}), which is a unique identifier for scientists to avoid name confusion in publications and use that to log in to ZENODO.
+\Question To create the ZENODO archive, first, download the release zip from the git provider. 
+Then start a new archive on ZENODO and upload the downloaded release zip in the file selection dialog. 
+\Question To turn the mere code into a documented archive, add all necessary meta-information for your Project to be well-documented, including contributors, Usage-Information, a link to the git repository, etc. 
+We also recommend re-stating most of the information presented in your \texttt{README} file here in the archive description text on ZENODO.
+You may want to specify the version identifier and the commit hash of the release to be very thorough.
+\Question Preview your inputs and check correctness.
+Click on the button to assign a DOI to your archive, as we do not yet have one. 
+Then publish your archive and retrieve the DOI for your release. 
+Be careful, you cannot modify the files in an archive once it has been published, so the files need to be in order before publication. 
+Metadata can still be corrected after you hit publish without triggering a new version of the project being created with a new DOI.
+\Question Concerning FAIR principles: Why is it helpful that git retains author information for commits and releases?
+\Question Why do code comments and documentation constitute \emph{metadata} for our project?
+\Question How does adding our archive to a repository like ZENODO satisfy the requirement of indexing and searchability?
+\Question Why should we include the reference to the git project and the commit? Which part of the FAIR principles is satisfied by this?
 \end{problem}
 
-\begin{problem}[title={Automated testing}]
-\noindent
-\Question Write tests for key functionality of your code, e.g. writing the output to file, running simulations for a certain number of bodies, for how the input reading works, etc.
-\Question Run these tests locally to confirm they are working
-\Question Setup git to automatically run these tests (on gitlab)
-\Question Test on the university gitlab, that the tests are run and inspect the results
-\Question Open issues for all aspects that need fixing and fix them with a hotfix branch. 
+
+\begin{problem}[title={FAIR principles - Accessibility}]
+\noindent The project has now been made publicly available with a DOI to be able to permanently access its (Meta)data.
+\Question Discuss, which steps for achieving accessibility have already been taken and which steps may still need to be taken at this point.
+You should consider each individual sub-aspect of the A-category of FAIR principles.
 \end{problem}
 
-\begin{problem}[title={Creating a release}]
-\noindent
-\Question Make sure that your code contains installation, usage and example information before creating the release
-\Question Now that you are confident in your code performing the way it should, merge features and hotfixes into your main branch and create a release
-\Question Add a useful explanation to your release.
+\begin{problem}[title={FAIR principles - Interoperability}]
+\noindent We have now prepared code in a version controlled repository with a public identifier on ZENODO, which allows access to its release state and metadata. 
+\Question Which parts of the steps taken up to this point open up our project to the aspects of Interoperability?
+\Question Which steps may still be necessary?
+\Question How does the documentation using a standard like the numpy/scipy notation with well-defined sections help in regards to both accessibility and interoperability?
+\Question Is the choice of Python as a language for our project also an aspect contributing to interoperability?
 \end{problem}
 
-\begin{problem}[title={FAIR principles}]
-\noindent
-\Question Create an Account on ZENODO
-\Question Download the release zip from the git provider and import it into ZENODO to create a documented archive
-\Question Add all necessary meta-information for your Project to be well-documented, including contributors, Usage-Information, a link to the git repository, etc. 
+\begin{problem}[title={FAIR principles - Reusability}]
+\noindent Our code includes detailed documentation and we have used the pdoc3-module to generate documentation that can be accessed separate from our code.
+\Question How does this level of documentation contribute to Reusability?
+\Question Why is it essential to include a \texttt{LICENSE} statement in our repository?
+\Question Why are the choice of python as a programming language and git as a standard version control system also essential for the aspect of reusability?
 \end{problem}
 
 \end{document}
