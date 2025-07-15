@@ -48,62 +48,96 @@ Exercise sheet 8: Exam preparation questions }
 \begin{document}
 %\maketitle 
 
-
-\begin{problem}[title={Working with other members}]
+\begin{problem}[title={Operating system principles}]
 \noindent
-\Question 
+\Question What is the main purpose of an operating system in relation to hardware and softwre?
+\Question How do python programs interact with the operating system? Which package is the most relevant for such interactions?
+\Question Explain the relation and differences between a process, a thread and a program. 
+\Question Explain the tradeoffs made in the memory hierarchy. Why do modern computers still contain slower and faster memories?
+ Why is it important to be aware of data being moved between these kinds of memory either automatically by the operating system/hardware or manually by our program to optimize software?
+\Question What is virtual memory in contrast to physical memory and how does it roughly work? Why does have such a big impact on multi-processing but not on multi-threading?
+\Question What kind of permissions can be awarded to files or directories in a linux-style file system? How are these permissions awarded? To which entities/how granular can you assign these permissions?
+\Question How would the following set of permissions be encoded in a octal permission number: The owner is allowed to read, write and execute the file. The group is allowed to read and execute but not write the file. All others are only allowed to read but neither write nor execute the file.
+\Question What is the command to set the permissions on a file? What is the command to set the owner and/or the group of a file?
+\end{problem}
+
+\begin{problem}[title={Python}]
+\noindent
+\Question What are the two main aspects that make up a type definition that can then be translated into CPU-understandable code?
+\Question What is the difference between static and dynamic typing? What is the difference between weak and strong typing? Is python statically or dynamically typed? Is python weakly or strongly typed?
+\Question Which package can be used to add extensive type information to variables and function definitions that can help the development environment provide useful guidance to you or a user during programming?
+\Question What is a namespace and what is its relation to a scope?
+\Question What are the 4 kinds of scopes one usually distinguishes when searching for a name?
+\Question Does python have private class members that are not accessible from the outside of the class?
+\Question Explain the relation between a class and an instance/object.
+\Question What is the \texttt{isinstance()} function used for?
+\Question What is the difference between the magic members \texttt{\_\_name\_\_} and  \texttt{\_\_class\_\_} of objects?
+\Question What is the  \texttt{\_\_doc\_\_} magic member used for?
+\Question What is the difference between  \texttt{\_\_str\_\_} and  \texttt{\_\_repr\_\_} members of an object in terms of when they will be called? What will happen, if only one of the two is defined in a class and the other magic member would be invoked?
+\Question Explain in your own words, what does the \texttt{map} function to? How can it be used to parallelize processing of data?
+\Question Explain in your own words, what does the \texttt{reduce} function to? 
+\Question List at least 4 different logging levels available in python loggers, rank their levels of severity and explain a short scenario each, when they should be used. 
 \end{problem}
 
 
-\begin{problem}[title={Working with other members}]
+\begin{problem}[title={Documentation}]
 \noindent
-\Question Set up a standard project on the university gitlab.
-\Question Add another member.
-\Question Come up with a small project (e.g. writing a simple many-body simulation with gravity)
-\Question Plan the project in a way that profits from the multi-cores on modern computers. Plan for documentation and testing to occur. 
-For this, identify key functionality that needs to be tested and identify interaction points with the user that need documentation.
-\Question Agree on a git workflow (preferrably with feature branches)
-\Question Work together to implement the parts necessary for your project on feature branches. Ask for feedback before merging through pull requests
-\Question Use issues to keep track of what has been done and what needs to be done
+\Question What is the target audience of documentation in contrast to code comments?
+\Question List at least 5 sections that are often recommended to appear in NumPy/SciPy style documentation.
+\Question What is the difference in purpose between the \texttt{Warns} and \texttt{Warnings} section?
+
 \end{problem}
 
-\begin{problem}[title={Automated testing}]
+\begin{problem}[title={Testing}]
 \noindent
-\Question Write tests for key functionality of your code, e.g. writing the output to file, running simulations for a certain number of bodies, for how the input reading works, etc.
-\Question Run these tests locally to confirm they are working
-\Question Setup git to automatically run these tests (on gitlab)
-\Question Test on the university gitlab, that the tests are run and inspect the results
-\Question Open issues for all aspects that need fixing and fix them with a hotfix branch. 
+\Question What are the different intents/purposes between unit testing and integration testing?
+\Question Why does the provision of automated tests help with the acceptance of software by a wider audience?
 \end{problem}
 
-%\begin{problem}[title={Parallelization in python}]
-%\noindent
-%\Question Write function to create a file with a configurable number of random float32 entries to a parameter filename
-%\Question Write function to read entries from a filename and calculate average
-%\Question now write a function that writes N files with M entries, then reads their averages back and calculates a final average
-%\Question Write a version of the function using a threadpool, where you use all cores of your CPU to parallalize the writing of files, then wait for that operation to finish, measure the time it took and then read them back with average calculation in parallel and measure the time for that as well. 
-%Overall compare the times for the writing operation and the times for the read+calculation operation to the non-parallelized version. Which part scales better with the number of cores? And why?
-%\Question now use the multiprocessing module to perform the part of the parallelized task that did not scale well with the number of cores.
-%\Question How does the multiprocessing module perform in place of the threaded version?
-%\end{problem}
-
-\begin{problem}[title={Creating a release}]
+\begin{problem}[title={Parallelism}]
 \noindent
-\Question Make sure that your code contains installation, usage and example information before creating the release
-\Question Now that you are confident in your code performing the way it should, merge features and hotfixes into your main branch and create a release
-\Question Add a useful explanation to your release.
+\Question What is parallelism in code execution and how does differ from concurrency?
+\Question Why does parallel execution commonly result in non-deterministic behavior?
+\Question What is a race condition? Why is it relevant for non-deterministic behavior? Which different kinds of race conditions can occur and which can lead to non-deterministic behavior?
+\Question Which tools are there to deal with the usual issues of non-determinism of parallel execution?
+\Question What is the difference in intent between a Lock or MutEx and a Barrier? What are they used for?
+\Question What is thread-safety? What is re-entrancy? 
+\Question Describe one approach to avoiding data races in parallel processing. Focus on what exactly avoids the occurrence of a race condition. (Hint: You may use the example of a parallelized map call, if this is helpful to you)
+\Question How do atomic operations avoid typical issues arising from race conditions?
+\Question What is the difference between a Semaphore and a Lock?
+\Question Can a provided program with a designated function to calculate be sped-up to an arbitrarily large degree by just parallelizing them to an arbitrarily large numper of threads/CPU cores? Or is there a theoretical limit depending on the program?
+\Question What is a deadlock? When does/can it occur? What are the 4 prerequisites for a deadlock? List 2 approaches to reduce the risk of or entirely avoid deadlocks occurring.
+\Question What is a livelock in contrast to a deadlock? Which of the two can an operating system automatically detect?
+\Question What is the Global Interpreter Lock (GIL) in python and what is its impact on multi-threading?
+\Question What are Queues and Pipes used for in parallel processing and what is the key difference between them?
+\Question Why can it help with parallelism in python to use external libraries through packages like numpy, scipy, etc.?
 \end{problem}
 
-\begin{problem}[title={FAIR principles}]
+\begin{problem}[title={Version control with git}]
 \noindent
-\Question Download the release zip from the git provider and import it into ZENODO to create a documented archive
-\Question Add all necessary meta-information for your Project to be well-documented, including contributors, Usage-Information, a link to the git repository, etc. 
-\Question publish your results and retrieve the DOI for your release
+\Question What are hashes used for in git and why are they so helpful in keeping track of versions of files?
+\Question How do the working directory, the staging area and the git repository relate to each other? When do files/updates move from where to where?
+\Question What is the difference between a Tree and a Blob object in Git? What do they respectively represent?
+\Question Why does the hash of a commit done on different machines, or by different users or at different times differ where the hash of a tree of the same project state on different machines or by different users should not change?
+\Question What is the rough difference between porcellain and plumbing commands in git?
+\Question What is a head or branch in the context of git?
+\Question What is a tag in the context of git and how does it differ from the concept of a branch?
+\Question What is a remote in the context of git? List three of the most common porcellain commands in git to interact with remotes.
+\Question In your own words: What is a stash in contrast to a normal commit?
+\Question In your own words: What is a git provider? Name one example of a git provider.
+\Question What is a fork and how is it related to the concept of pull requests?
+\Question Which team size is the feature-branch workflow most suitable for: small, medium or large?
+\Question Which of the presented workflows is most common in open-source projects?
+\Question Which of the following two documentation features associated with git projects should go more into detail on your project: the wiki or the Readme? Why should the other be more condensed?
 \end{problem}
 
-\begin{problem}[title={Publish the package on PyPi}]
+\begin{problem}[title={FAIR research data management}]
 \noindent
-\Question Perform the steps for a dummy-publication of your package on PyPi
+\Question What are the 4 terms associated with the acronym \emph{FAIR} in research data management?
+\Question Which of the 4 principles are certainly satisfied by making code publicly available on a git provider? Which are only satisfied by creating a zenodo archive from a release version and which are not satisfied through these publication efforts?
+\Question Which of the 4 principles are targeted by providing documentation of our code?
+\Question Why should we use standard file formats for our program output? Which FAIR principles are more easily satisified through this?
+\Question Which of the 4 principles makes it necessary to include a clear usage license with our code?
 \end{problem}
 
 \end{document}
